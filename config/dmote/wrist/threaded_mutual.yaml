@@ -6,9 +6,9 @@ wrist-rest:
   mounts:
   - fasteners:
       bolt-properties:
-        m-diameter: 6
-        head-type: socket
-        total-length: 55
+        m-diameter: 3
+        head-type: button
+        total-length: 50
       heights: [7]
     authority: mutual
     blocks:

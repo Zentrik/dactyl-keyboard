@@ -8,9 +8,9 @@ wrist-rest:
   mounts:
   - fasteners:
       bolt-properties:
-        m-diameter: 4
-        head-type: socket
-        total-length: 60
+        m-diameter: 3
+        head-type: button
+        total-length: 50
       heights: [6]
     angle: π/8
     blocks:
@@ -34,9 +34,9 @@ wrist-rest:
         wr0w0: [wrist-side, 0]
   - fasteners:
       bolt-properties:
-        m-diameter: 4
-        head-type: socket
-        total-length: 45
+        m-diameter: 3
+        head-type: button
+        total-length: 50
       heights: [6]
     angle: π/8
     blocks:

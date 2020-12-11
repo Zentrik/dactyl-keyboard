@@ -78,12 +78,19 @@ main-body:
         - anchor: t1
           side: N
           intrinsic-offset: [2, -1, 0]
+  leds:
+    include: false
 tweaks:
   # Tweaks directly involving the rear housing are disabled.
   rear-housing-sides: null
   rear-housing-near-edge: null
   rear-housing-to-main-gap: null
-  connector-housing: null
+  connector-housing:
+    # An opening from the port to the interior.
+    - positive: false
+      hull-around:
+      - [reflection-port,
+         {anchoring: {side: S, segment: 1, intrinsic-offset: [0, 0, -3]}, size: [8, 8, 8]}]
   # A new tweak is added to bridge the rear key cluster gap directly.
   rear-gap:
     - hull-around:
@@ -99,7 +106,53 @@ tweaks:
       - [back3, NNE, 3]
       - [back3, ENE, 2, 3]
 mcu:
-  include: false
+  include: true
+  type: promicro
+  preview: false
+  # Stand on the long edge, folded into the rear housing.
+  anchoring:
+    anchor: back0
+    side: NW
+    segment: 3  # Floor level.
+    preserve-orientation: true
+    intrinsic-rotation: [pi/70, pi/2, 0]
+    extrinsic-offset: [-4.5, -18, -37.5]
+  support:
+    shelf:
+      include: true
+    lock: 
+      include: false
+      plate:
+        backing-thickness: 3
 ports:
   reflection-port:
-    include: false
+    include: true
+    type: modular-4p4c-616e
+    anchoring:
+      anchor: back0
+      side: NW
+      segment: 3
+      preserve-orientation: true
+      intrinsic-rotation: [0, 0, pi/45]
+      intrinsic-offset: [20, 11, -25]
+    alignment:
+      side: NW
+      segment: 0
+    holder:
+      include: true
+      alias: reflection-port-holder
+      thickness: 2
+  mcu-port:
+    include: true
+    type: custom
+    size: [12, 20, 10]
+    anchoring:
+      anchor: back0
+      side: NW
+      segment: 3  # Floor level.
+      preserve-orientation: true
+      intrinsic-rotation: [pi/70, pi/2, 0]
+      extrinsic-offset: [2, 2, -31] #[-4.5, -18, -37.5] + [5, 0, 2.5]
+    alignment:
+      side: NW
+      segment: 0
