@@ -1,0 +1,14 @@
+#Makes DMOTE tolerances larger so it prints on my printer
+
+keys:
+  styles:
+    default:
+        supported: false
+    minimal-short:
+      supported: false
+    minimal-tall:
+      supported: false
+dfm:
+  error-general: -0.7
+  keycaps:
+    error-stem-negative: -0.45

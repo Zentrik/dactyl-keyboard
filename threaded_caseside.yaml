@@ -1,0 +1,81 @@
+# Configuration fragment for anchoring of a wrist rest to the main body,
+# demonstrating the use of multiple mounts with a consistent angle to allow
+# the position of the wrist rest to be adjusted.
+
+wrist-rest:
+  include: true
+  style: threaded
+  mounts:
+  - fasteners:
+      bolt-properties:
+        m-diameter: 3
+        head-type: button
+        total-length: 50
+      heights: [6]
+    angle: π/8
+    blocks:
+      distance: 36
+      width: 10
+      partner-side:
+        anchoring:
+          anchor: t4
+          side: NNE
+          segment: 3
+          extrinsic-offset: [7, -6, 0]
+        depth: 9
+      wrist-side:
+        depth: 5
+    aliases:
+      blocks:
+        wr0p: partner-side
+        wr0w: wrist-side
+      nuts:
+        wr0p0: [partner-side, 0]
+        wr0w0: [wrist-side, 0]
+  - fasteners:
+      bolt-properties:
+        m-diameter: 3
+        head-type: button
+        total-length: 50
+      heights: [6]
+    angle: π/8
+    blocks:
+      distance: 31
+      width: 10
+      partner-side:
+        anchoring:
+          anchor: front5
+          side: SSW
+          segment: 3
+          extrinsic-offset: [-5, 0, 0]
+        depth: 6
+      wrist-side:
+        depth: 5
+    aliases:
+      blocks:
+        wr1p: partner-side
+        wr1w: wrist-side
+      nuts:
+        wr1p0: [partner-side, 0]
+        wr1w0: [wrist-side, 0]
+tweaks:
+  wrist-rest-nut-pockets:
+  - at-ground: true
+    positive: false
+    hull-around: [[wr0w0]]
+  - at-ground: true
+    positive: false
+    hull-around: [[wr0p0, {anchoring: {intrinsic-offset: [0, -2, 0]}}]]
+  - at-ground: true
+    positive: false
+    hull-around: [[wr1w0]]
+  - at-ground: true
+    positive: false
+    hull-around: [[wr1p0, {anchoring: {intrinsic-offset: [0, -0.5, 0]}}]]
+  wrist-rest-nut-bosses:
+  # These are superficial, intended for use together with the
+  # pockets in the same mounts.
+  - positive: false
+    hull-around: [[wr0p0, {anchoring: {intrinsic-offset: [0, 5.5, 0]}}]]
+  - positive: false
+    hull-around: [[wr1p0, {anchoring: {intrinsic-offset: [0, 4, 0]}}]]
