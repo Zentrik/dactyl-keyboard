@@ -3,10 +3,10 @@
 ;; Placement Utilities                                                 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; This module consolidates functions on the basis that some minor features,
-;;; including foot plates and bottom-plate anchors, can be positioned in
-;;; relation to multiple other types of features, creating the need for a
-;;; a high-level, delegating placement utility that builds on the rest.
+;;; This module consolidates functions on the basis that some features can be
+;;; positioned in relation to multiple other types of features, creating the
+;;; need for a a high-level, delegating placement utility that builds on the
+;;; rest.
 
 (ns dactyl-keyboard.cad.place
   (:require [clojure.spec.alpha :as spec]
@@ -17,15 +17,14 @@
             [scad-tarmi.core :refer [abs π] :as tarmi-core]
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.flex :as flex]
-            [scad-klupe.base :refer [shank-section-lengths]]
-            [scad-klupe.iso :refer [head-length]]
             [dmote-keycap.data :as capdata]
             [dmote-keycap.measure :as measure]
             [dactyl-keyboard.cots :as cots]
             [dactyl-keyboard.compass :as compass]
             [dactyl-keyboard.cad.matrix :as matrix]
             [dactyl-keyboard.cad.misc :as misc]
-            [dactyl-keyboard.cad.key.switch :refer [resting-clearance]]
+            [dactyl-keyboard.cad.key.switch :refer [mount-thickness
+                                                    resting-clearance]]
             [dactyl-keyboard.param.access
              :refer [most-specific resolve-anchor key-properties
                      salient-anchoring compensator]]
@@ -42,9 +41,12 @@
 
 (defn- adaptive-corner-offset
   "Locate the corner of a switch mount based on its key style."
-  [most {:keys [unit-size] :or {unit-size [1 1]}} [dx dy]]
-  (let [[subject-x subject-y] (map measure/key-length unit-size)]
-    [(* 1/2 dx subject-x) (* 1/2 dy subject-y) (/ (most :wall :thickness 2) -2)]))
+  [getopt cluster coord side key-style [dx dy]]
+  (let [{:keys [unit-size]} (getopt :keys :derived key-style)
+        [subject-x subject-y] (map measure/key-length (or unit-size [1 1]))]
+    [(* 1/2 dx subject-x)
+     (* 1/2 dy subject-y)
+     (/ (mount-thickness getopt cluster coord) -2)]))
 
 (defn- custom-corner-offset
   "Locate the corner of a switch mount based on explicit plate properties."
@@ -62,7 +64,7 @@
                              (or side :dactyl-keyboard.cad.key/any))
         factors (misc/grid-factors side)]
     (if (most :plate :use-key-style)
-      (adaptive-corner-offset most (getopt :keys :derived (most :key-style)) factors)
+      (adaptive-corner-offset getopt cluster coord side (most :key-style) factors)
       (custom-corner-offset most factors))))
 
 (defn- curver
@@ -150,7 +152,8 @@
   ;; the closest cardinal direction, flipping x and y accordingly so that a
   ;; user can supply a single offset that is equally useful in all directions,
   ;; and/or fully detailed exceptions for any particular side and segment.
-  (let [most #(most-specific getopt [:wall :segments %] cluster coord side)
+  (let [most #(most-specific getopt [:wall :segments % :intrinsic-offset]
+                             cluster coord side)
         [dx _] (misc/grid-factors (compass/northern-modulus side))
         rotation (compass/matrices (compass/convert-to-cardinal side))
         rotate (fn [[x y z]] (conj (mmul rotation [x y]) z))]
@@ -163,7 +166,7 @@
   This can go to one corner of the hem of the mount’s skirt of
   walling and therefore finds the base of full walls."
   [getopt cluster coordinates
-   {:keys [side segment vertex] :or {vertex false} :as keyopts}]
+   {:keys [side segment vertex] :or {segment 0, vertex false} :as keyopts}]
   {:pre [(or (nil? side) (compass/all side))]}
   (mapv +
     (mount-corner-offset getopt cluster coordinates side)
@@ -173,7 +176,8 @@
       (matrix/cube-vertex-offset
         side
         (map #(/ % 2)
-             (most-specific getopt [:wall :thickness] cluster coordinates side))
+             (most-specific getopt [:wall :segments segment :size]
+                            cluster coordinates side))
         keyopts)
       [0 0 0])))
 
@@ -415,11 +419,10 @@
   (let [{:keys [p size]} (getopt :wrist-rest :derived :spline :bounds)]
     (mapv - point p (mapv #(/ % 2) size))))
 
-(defn wrist-segment-naive
-  "Use wrist-segment-coord with a layer of translation from the naïve/relative
-  coordinates initially supplied by the user to the derived base.
-  Also support outline keys as an alternative to segment IDs, for bottom-plate
-  fasteners."
+(defn- wrist-segment-naive
+  "Support outline keys as an alternative to segment IDs. With no outline key,
+  use wrist-segment-coord with a layer of translation from the naïve/relative
+  coordinates initially supplied by the user to the derived base."
   [getopt naive-xy outline-key segment]
   (let [aware-xy (relative-to-wrist-base getopt naive-xy)]
     (if (some? outline-key)
@@ -453,27 +456,26 @@
 
 ;; Flanges.
 
-(defn- flange-boss-zoffset
-  "Compute the z-axis offset for part of a flange screw."
-  [getopt flange segment]
-  (let [{:keys [m-diameter head-type] :as bolt-properties}
-        (getopt :flanges flange :bolt-properties)
-        head (head-length m-diameter head-type)
-        bolt-lengths (shank-section-lengths
-                       (assoc bolt-properties :head-length head))
-        [unthreaded threaded] bolt-lengths]
-    (- (case segment 0 0
-                     1 head
-                     2 (+ head unthreaded)
-                     3 (+ head unthreaded threaded)))))
+(defn flange-segment-offset
+  "Compute the cumulative offset for part of a screw boss."
+  [getopt flange position-index segment]
+  (let [prop (partial getopt :flanges flange :bosses :segments)]
+    (apply mapv + (map #(prop % :intrinsic-offset)
+                       (range 0 (inc segment))))))
 
 (defn flange-place
-  "Place a flange screw or part of a boss for such a screw."
+  "Place a flange bolt, insert and/or boss.
+  For bottom flanges, force the preservation of orientation and use only the
+  xy-plane for positioning relative to the anchor."
   [getopt flange position-index segment subject]
-  (at-named getopt
-    (getopt :flanges flange :positions position-index :anchoring)
-    (flex/translate [0 0 (flange-boss-zoffset getopt flange segment)]
-                    subject)))
+  (let [bottom (getopt :flanges flange :bottom)
+        anchoring (merge (when bottom {:preserve-orientation true, ::n-dimensions 2})
+                         (salient-anchoring
+                           (getopt :flanges flange :positions position-index :anchoring)))]
+    (cond->> subject
+      segment (flex/translate (flange-segment-offset getopt flange position-index segment))
+      bottom (flex/rotate [π 0 0])
+      true (at-named getopt anchoring))))
 
 ;; Polymorphic treatment of the properties of aliases.
 
@@ -572,7 +574,7 @@
     (flex/translate (port-holder-offset getopt (assoc opts :anchor primary))
        subject)))
 
-(defmethod by-type ::anch/flange-screw
+(defmethod by-type ::anch/flange-boss
   [getopt {:keys [flange position-index segment subject]}]
   (flange-place getopt flange position-index (or segment 0) subject))
 

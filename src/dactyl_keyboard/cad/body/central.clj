@@ -16,11 +16,10 @@
             [scad-tarmi.maybe :as maybe]
             [scad-tarmi.util :refer [loft]]
             [scad-klupe.iso :as iso]
-            [dactyl-keyboard.cad.misc :refer [merge-bolt wafer]]
+            [dactyl-keyboard.cad.misc :refer [merge-bolt wafer flip-x]]
             [dactyl-keyboard.cad.poly :as poly]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.misc :refer [soft-merge]]
-            [dactyl-keyboard.param.access :refer [compensator]]))
+            [dactyl-keyboard.misc :refer [soft-merge]]))
 
 
 ;;;;;;;;;;;;;;;
@@ -93,11 +92,6 @@
   [_ _]
   (model/call-module "housing_adapter_fastener"))
 
-(defn- single-left-side-fastener
-  "The same model, pre-emptively mirrored to get the right threading."
-  [_ _]
-  (model/mirror [-1 0 0] (model/call-module "housing_adapter_fastener")))
-
 (defn- single-receiver
   "An extension through the central-housing interface array to receive a single
   fastener. This design is a bit rough; more parameters would be needed to
@@ -141,8 +135,8 @@
   "Get raw offsets for each point on the interface."
   [interface]
   [(map #(get-in % [:base :offset] [0 0 0]) interface)
-   (map #(get-in % [:adapter :segments 0] [0 0 0]) interface)
-   (map #(get-in % [:adapter :segments 1] [0 0 0]) interface)])
+   (map #(get-in % [:adapter :segments 0 :intrinsic-offset] [0 0 0]) interface)
+   (map #(get-in % [:adapter :segments 1 :intrinsic-offset] [0 0 0]) interface)])
 
 (defn- get-widths
   "Get half the width of the central housing and the full width of its
@@ -342,8 +336,7 @@
   This needs to be mirrored for the left-hand-side adapter, being chiral
   by default. Hence it is written for use as an OpenSCAD module."
   [getopt]
-  (merge-bolt
-    {:compensator (compensator getopt), :negative true}
+  (merge-bolt getopt
     (getopt :central-housing :adapter :fasteners :bolt-properties)))
 
 (defn adapter-right-fasteners
@@ -356,7 +349,7 @@
   symmetry is currently implemented for the central housing, this function does
   not mirror the positions of adapter-right-fasteners."
   [getopt]
-  (fastener-feature getopt any-side single-left-side-fastener))
+  (fastener-feature getopt any-side #(flip-x (single-right-side-fastener %1 %2))))
 
 (defn adapter-fastener-receivers
   "Receivers for screws, extending from the central housing into the adapter."

@@ -127,11 +127,11 @@
     (mapmap
       (fn [[flange {:keys [positions]}]]
         (mapmap-indexed
-          (fn [index {:keys [alias]}]
-            (when alias
-              {alias {::type ::flange-screw
-                      :flange flange
-                      :position-index index}}))
+          (fn [index {:keys [boss-alias]}]
+            (when boss-alias
+              {boss-alias {::type ::flange-boss
+                           :flange flange
+                           :position-index index}}))
           positions))
       (getopt :flanges))
 

@@ -19,11 +19,19 @@ by-key:
       height: 20
       top-width: 10
     wall:
-      thickness: 2
       segments:
-        "1": [0,  1, -1]  # Top bevel.
-        "2": [0,  0, -8]  # Perpendicular wall.
-        "3": [0, -1, -1]  # Bottom bevel.
+        "0":
+          size: 2
+          intrinsic-offset: [0,  0, 0]
+        "1":
+          size: 2
+          intrinsic-offset: [0,  1, -1]  # Top bevel.
+        "2":
+          size: 2
+          intrinsic-offset: [0,  0, -8]  # Perpendicular wall.
+        "3":
+          size: 2
+          intrinsic-offset: [0, -1, -1]  # Bottom bevel.
 main-body:
   rear-housing:
     thickness:
@@ -37,17 +45,6 @@ main-body:
       bolt-properties:
         m-diameter: 4
         head-type: countersunk
-        include-threading: false
-  bottom-plate:
-    installation:
-      thickness: 2.5
-      fasteners:
-        bolt-properties:
-          m-diameter: 3
-          head-type: countersunk
-          point-type: cone  # Design for manufacturing: Easy printing.
-          total-length: 8.5
-          include-threading: false
 central-housing:
   adapter:
     fasteners:
@@ -55,7 +52,58 @@ central-housing:
         m-diameter: 3
         head-type: countersunk
         total-length: 8.5
-        include-threading: false
+flanges:
+  main-bottom-plate:
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        total-length: 8.5
+        channel-length: 1
+    bosses:
+      segments:
+        "0":
+          size: [7, 1]
+        "1":
+          size: [4, 1]
+          intrinsic-offset: [0, 0, -6]
+  central-housing-bottom-plate:
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        total-length: 8.5
+        channel-length: 1
+    bosses:
+      segments:
+        "0":
+          size: [7, 1]
+        "1":
+          size: [4, 1]
+          intrinsic-offset: [0, 0, -6]
+  wrist-rest-bottom-plate:
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        total-length: 8.5
+        channel-length: 1
+    bosses:
+      segments:
+        "0":
+          size: [7, 1]
+        "1":
+          size: [4, 1]
+          intrinsic-offset: [0, 0, -6]
 mcu:
   type: promicro
   support:
@@ -76,6 +124,6 @@ mcu:
 resolution:
   include: true
 dfm:
-  error-general: -0.5
+  error-general: -0.4
   bottom-plate:
-    fastener-plate-offset: -0.1
+    fastener-plate-offset: -0.15

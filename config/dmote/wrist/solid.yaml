@@ -1,8 +1,7 @@
 # Configuration fragment for a solid bridge between case and wrist rest.
 
-main-body:
-  bottom-plate:
-    combine: true
+bottom-plates:
+  combine: true
 wrist-rest:
   include: true
   style: solid
@@ -63,7 +62,7 @@ secondaries:
 tweaks:
   wrist-rest-bridge-main-body:
     - chunk-size: 2
-      at-ground: true
+      to-ground: true
       hull-around:
       - hull-around:
         - [wrb1-west]
@@ -74,7 +73,7 @@ tweaks:
         - [wrb2-top]
   wrist-rest-bridge-middle:
     - chunk-size: 2
-      at-ground: true
+      to-ground: true
       hull-around:
       - hull-around:
         - [wrb2-bottom]
@@ -84,7 +83,7 @@ tweaks:
         - [wrb3-top]
   wrist-rest-bridge-rest:
     - chunk-size: 2
-      at-ground: true
+      to-ground: true
       hull-around:
       - hull-around:
         - [wrb3-bottom]

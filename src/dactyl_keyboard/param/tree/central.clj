@@ -4,10 +4,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.param.tree.central
-  (:require [clojure.spec.alpha :as spec]
-            [scad-tarmi.core :as tarmi-core]
-            [dactyl-keyboard.param.schema.anch :as anch]
-            [dactyl-keyboard.param.schema.parse :as parse]
+  (:require [dactyl-keyboard.param.schema.parse :as parse]
             [dactyl-keyboard.param.schema.valid :as valid]
             [dactyl-keyboard.param.stock :as stock]))
 
@@ -103,13 +100,14 @@
     "facing away from the central housing. Notice that the side facing toward "
     "the central housing is coterminous with the interface itself, so the "
     "corresponding point on it is named by `right-hand-alias`.\n"
-    "* `segments`: A map of integer segment IDs to three-dimensional offsets "
-    "in mm. In this map, segment 0 refers to the outer shell of the adapter, "
-    "and any offset provided for it is added to both the width of the adapter "
-    "and the base position when determining the exact shape of the adapter. "
-    "Segment 1 refers to the inside of the adapter; any offset provided for "
-    "it is relative to the sum of the final position of segment 0 and the "
-    "central housing’s thickness, which acts as a radial inset.\n"
+    "* `segments`: A map of integer segment IDs to maps with "
+    "three-dimensional offsets in mm. In this map, segment 0 refers to the "
+    "outer shell of the adapter, and any offset provided for it is added to "
+    "both the width of the adapter and the base position when determining the "
+    "exact shape of the adapter. Segment 1 refers to the inside of the "
+    "adapter; any offset provided for it is relative to the sum of the final "
+    "position of segment 0 and the central housing’s thickness, which acts as "
+    "a radial inset.\n"
     "\n"
     "`segments` resembles an entry in the `by-key` section of parameters. "
     "There are two important differences: Segment IDs other than 0 and 1 "
@@ -134,8 +132,11 @@
     "    adapter:\n"
     "      alias: adapter-side-1\n"
     "      segments:\n"
-    "        \"0\": [10, 0, 0]\n"
-    "        \"1\": [-1, 0, 0]\n```"
+    "        \"0\":\n"
+    "          intrinsinc-offset: [10, 0, 0]\n"
+    "        \"1\":\n"
+    "          intrinsinc-offset: [-1, 0, 0]\n"
+    "```\n"
     "\n"
     "In this example, the vertex named `adapter-side-1` will be placed 10 mm "
     "plus the overall width of the adapter away from `housing-side-1R`, with "
@@ -335,33 +336,4 @@
     "The width of the receiver at its base, before it starts to taper, in mm."]
    [[:adapter :receivers :width :taper]
     {:default 0 :parse-fn num}
-    "The width of a taper, as with the lip."]
-   [[:bottom-plate]
-    "Any bottom plating for the case will extend to the midpoint of the "
-    "central housing, on the assumption that bottom-plating anchors will "
-    "be used to attach it there."]
-   [[:bottom-plate :projections]
-    "To facilitate printing a central housing standing on its edge, or to add "
-    "strength, you can extend bottom-plating anchors onto the nearest wall, "
-    "via a convex hull of each anchor and its projection. The result is an "
-    "internal chamfer resembling a primitive fillet."]
-   [[:bottom-plate :projections :include]
-    {:default false :parse-fn boolean}
-    "If `true`, extend each bottom-plating anchor."]
-   [[:bottom-plate :projections :scale]
-    {:default [1 1] :parse-fn vec :validate [::tarmi-core/point-2d]}
-    "The scale of each projection, as a 2-tuple of horizontal and vertical "
-    "factors. The horizontal factor controls the width of the projection and "
-    "the vertical factor its height. The length of the projection is fixed "
-    "at the distance between the center of the anchor and the outermost "
-    "part of its shell."]
-   [[:bottom-plate :fastener-positions]
-    {:default []
-     :parse-fn (parse/tuple-of anch/parse-anchoring)
-     :validate [(spec/coll-of anch/validate-anchoring)]}
-    "The positions of threaded fasteners used to attach the bottom plate to "
-    "the central housing. In addition to the properties permitted "
-    "in similar lists of such anchors, the central housing permits a "
-    "`direction`, formulated as a point on the compass or an angle in "
-    "radians. This property controls the facing of a projection. Typically, "
-    "you want it facing the central housing’s nearest wall."]])
+    "The width of a taper, as with the lip."]])

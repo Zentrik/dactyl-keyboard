@@ -1,4 +1,4 @@
-# Introduction to the DMOTE application
+# Introduction
 
 The DMOTE application is a CAD application. It grew out of a single keyboard
 design (the DMOTE keyboard) and now comes bundled with several different
@@ -11,12 +11,12 @@ DMOTE application as such, not its individual bundled designs or any firmware.
 Concrete build guides and other peripheral documents can be found elsewhere:
 
 * A less technical, more [general introduction](https://viktor.eikman.se/article/the-dmote/).
-* A guide to [planning for wiring](https://viktor.eikman.se/article/3d-keyboard-wiring/) in 3D.
 * Build guides:
     * The [Dactyl](https://github.com/adereth/dactyl-keyboard/tree/master/guide),
       which is currently not bundled with the DMOTE application.
     * The [Dactyl-ManuForm](https://github.com/tshort/dactyl-keyboard).
     * The [Concertina](https://viktor.eikman.se/article/concertina-v060-build-guide/).
+* A guide to [planning for wiring](https://viktor.eikman.se/article/3d-keyboard-wiring/) in 3D.
 
 As for microcontroller firmware, QMK works great and has good documentation. In
 that project, the DMOTE is filed as a version of the Dactyl-ManuForm
@@ -53,37 +53,44 @@ own.
 
 ### Setting up the build environment
 
-* Install the [Clojure runtime](https://clojure.org)
-* Install the [Leiningen project manager](http://leiningen.org/)
-* Optional: Install [GNU make](https://www.gnu.org/software/make/)
-* Install [OpenSCAD](http://www.openscad.org/)
+* Install the [Clojure runtime](https://clojure.org).
+* Install the [Leiningen project manager](http://leiningen.org/).
+* Install [OpenSCAD](http://www.openscad.org/).
+* Optional: Install [GNU make](https://www.gnu.org/software/make/).
 
-On Debian GNU+Linux, the first three are accomplished with `apt install clojure
-leiningen make`. The necessary Clojure libraries will be pulled in when you run
-Leiningen.
+On Debian GNU+Linux, all four are accomplished with `apt install clojure
+leiningen openscad make`. The necessary Clojure libraries will be pulled in
+by Leiningen.
+
+### Designing a keyboard
+
+The Clojure application combines configuration details from zero or more
+[YAML](https://en.wikipedia.org/wiki/YAML) files like the ones under `config`.
+The process is [documented here](configuration.md). Together, the files you
+select define the shape of your keyboard.
+
+Even if you go with a bundled design, you might want to customize it for your
+own hands. You won’t need to touch the source code for such a personal fit.
+Just edit the YAML or add your own file to the configuration.
+
+To start learning how to configure the application one feature at a time, go to
+the Butty tutorial, [here](tutorial-1a.md). It starts from scratch and covers a
+lot of the basics.
 
 ### Producing OpenSCAD and STL files
 
 There is more than one way to run the application. The easiest and most
-automated is to call `make` from your command line. Refer to the [execution
-guide](execution.md) for details and alternatives.
+automated is to call `make` from your command line, but this will not use any
+original YAML you have created. Refer to the [execution guide](execution.md)
+for details and alternatives.
 
 After running the application, start OpenSCAD. Open one of the
 `things/scad/*.scad` files for a preview. To render a complex model in
-OpenSCAD, you may need to go to Edit >> Preferences >> Advanced and raise the
+OpenSCAD, you may need to go to Edit → Preferences → Advanced and raise the
 ceiling for when to “Turn off rendering”. When you are satisfied with the
 preview, you can render to STL from OpenSCAD.
 
-## Customization
-
-You probably want to customize the design for your own hands. You won’t need
-to touch the source code for a personal fit or additional keys.
-
-The Clojure application combines configuration details from zero or more
-[YAML](https://en.wikipedia.org/wiki/YAML) files like the ones under `config`.
-The process is [documented here](configuration.md).
-
-### Deeper changes
+## Deep changes
 
 If you find that you cannot get what you want just by changing the parameters,
 you need to edit the source code. If you are not familiar with OpenSCAD, start
@@ -120,21 +127,6 @@ for `include-threading`. If you set this to `false`, a hole cut for that bolt
 will be a plain cylinder with the inner diameter (a.k.a. minor diameter) of
 standard ISO threading. If you have enough plastic in the perimeter of that
 hole, you can drill it to clean up the print and then tap it.
-
-### Bottom plates
-
-When you include a central housing in your design and request a combined bottom
-plate, you also get a pair of symmetrical one-sided bottom plates, just in case
-the combined version is too large for your printer.
-
-If you are using threaded fasteners to connect bottom plates directly to the
-case (the `threads` style), please see the advice on accuracy, above.
-
-If you are having trouble with the fit and neither DFM settings nor larger
-fasteners are helping, consider a greater `thickness` for the anchor points,
-along with slicer settings that give you thinner walls and less infill. This
-should give you a more yielding threaded hole, decreasing the risk of a
-delaminating crack, but increasing the risk of threads deforming over time.
 
 ### Wrist rests
 

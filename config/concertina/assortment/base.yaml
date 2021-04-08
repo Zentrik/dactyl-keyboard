@@ -26,13 +26,17 @@ custom-bodies:
             size: [200, 200, 200]}]
 flanges:
   assortment-bookend-flanges:
-    bolt-properties:
-      m-diameter: 3
-      head-type: countersunk
-      point-type: cone
-      include-threading: true
-      total-length: 12
-      channel-length: 4
+    include: true
+    reflect: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        include-threading: true
+        total-length: 12
+        channel-length: 4
     positions:
     # Mounting screws in the loft of the central housing:
     - anchoring:
@@ -47,20 +51,8 @@ flanges:
         segment: 0
         intrinsic-rotation: [0, π/-2, 0]
         intrinsic-offset: [-2, 10, 6]
-    - anchoring:
-        anchor: assortment1
-        side: NE
-        segment: 0
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, -12, 6]
-    - anchoring:
-        anchor: assortment1
-        side: SE
-        segment: 0
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, 10, 6]
     # One screw beneath each of the four lower corners of each assortment port,
-    # right-hand-side.
+    # except the mid-level rear.
     - anchoring:
         anchor: assortment1
         side: SW
@@ -73,12 +65,6 @@ flanges:
         segment: 2
         intrinsic-rotation: [0, π/-2, 0]
         intrinsic-offset: [-2, -6, -2]
-    - anchoring:
-        anchor: assortment2
-        side: SW
-        segment: 2
-        intrinsic-rotation: [0, π/-2, 0]
-        intrinsic-offset: [-2, 12, -2]
     - anchoring:
         anchor: assortment2
         side: NW
@@ -97,43 +83,60 @@ flanges:
         segment: 2
         intrinsic-rotation: [0, π/-2, 0]
         intrinsic-offset: [-2, -6, -2]
-    # The same on the left.
-    - anchoring:
-        anchor: assortment1
-        side: SE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, 12, -2]
-    - anchoring:
-        anchor: assortment1
-        side: NE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, -6, -2]
-    - anchoring:
-        anchor: assortment2
-        side: SE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, 12, -2]
-    - anchoring:
-        anchor: assortment2
-        side: NE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, -6, -2]
-    - anchoring:
-        anchor: assortment3
-        side: SE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, 12, -2]
-    - anchoring:
-        anchor: assortment3
-        side: NE
-        segment: 2
-        intrinsic-rotation: [0, π/2, 0]
-        intrinsic-offset: [2, -6, -2]
+  central-housing-bottom-plate:
+    include: true
+    bosses:
+      segments:
+        "0":
+          size: [7, 2]
+        "1":
+          size: [4, 8]
+          intrinsic-offset: [0, 0, -4]
+        "2":
+          size: [7, 6]
+          intrinsic-offset: [0, -0.5, 0]
+        "3":
+          style: cube
+          size: [18, 1, 9]
+          intrinsic-offset: [0, -2, 0]
+    positions:
+    # The first of these go inside the centermost piece of the
+    # housing.
+    - boss-alias: bottom-central-N
+      # Not reflected; it would just end up in the same position.
+      anchoring:
+        extrinsic-offset: [0, 36, 0.25]
+    - boss-alias: bottom-central-NE
+      reflect: true  # Copy to the NW side.
+      anchoring:
+        extrinsic-offset: [72, 36, 0.25]
+    - boss-alias: bottom-central-SE
+      reflect: true
+      anchoring:
+        intrinsic-rotation: [0, 0, π]
+        extrinsic-offset: [72, -51, 0.25]
+    - boss-alias: bottom-central-S
+      anchoring:
+        intrinsic-rotation: [0, 0, π]
+        extrinsic-offset: [0, -51, 0.25]
+    # The remaining positions are inside the custom bodies made
+    # from the central housing.
+    - boss-alias: bottom-bookend-N
+      reflect: true
+      anchoring:
+        anchor: ci-far-base
+        extrinsic-offset: [-7, -4, 0.25]
+    - boss-alias: bottom-bookend-S
+      reflect: true
+      anchoring:
+        anchor: ci-near-base
+        intrinsic-rotation: [0, 0, π]
+        extrinsic-offset: [-10, 4, 0.25]
+    - boss-alias: bottom-bookend-W
+      reflect: true
+      anchoring:
+        intrinsic-rotation: [0, 0, π/2]
+        extrinsic-offset: [84, -7.5, 0.25]
 ports:
   # Three slots follow for assortment drawers, with 4 mm between each.
   # There is also a 4 mm lip above the top drawer, partly for aesthetics and
@@ -169,11 +172,32 @@ ports:
       alias: assortment3-holder
       thickness: 2
 tweaks:
+  top-cable-channel:
+  # Irregular tetrahedrons going into the loft of the central housing.
+  # Their shape is meant to ease cable runs and printing, while accommodating
+  # long flange screws.
+  - above-ground: true
+    reflect: true
+    hull-around:
+    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
+    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -15, 9]}, size: [4, 1, 18]}]
+    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [-75, -0.5, 2]}, size: [1, 1, 4]}]
+  - above-ground: true
+    reflect: true
+    hull-around:
+    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
+    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 13, 9]}, size: [4, 1, 18]}]
+    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [-75, 0, 2]}, size: [1, 1, 4]}]
+  # The following two tweaks describe extra shapes just beneath the lowest
+  # assortment port. These contain the lowest screws and magnets for the
+  # bookend flanges.
+  drawer-stack-sides:
   # Walls to ground on both flanks of the assortment ports.
   # These provide an additional lower compartment that is not a port but can be
   # filled with non-printed material to add mass to the keyboard.
-  central-dividers:
-  - at-ground: true
+  - to-ground: true
+    at-ground: false
+    reflect: true
     chunk-size: 2
     hull-around:
     - hull-around:
@@ -185,51 +209,55 @@ tweaks:
     - hull-around:
       - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [4.5, -1, -16]}, size: 1}]
       - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [4.5, 0, -16]}, size: 1}]
-  - at-ground: true
-    chunk-size: 2
-    hull-around:
-    - hull-around:
-      - [assortment1, NW, {anchoring: {intrinsic-offset: [-0.5, -1, 0]}, size: 1}]
-      - [assortment1, SW, {anchoring: {intrinsic-offset: [-0.5, 0, 0]}, size: 1}]
-    - hull-around:
-      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [-0.5, -1, -12]}, size: 1}]
-      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [-0.5, 0, -12]}, size: 1}]
-    - hull-around:
-      - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [-4.5, -1, -16]}, size: 1}]
-      - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [-4.5, 0, -16]}, size: 1}]
-  # Irregular tetrahedrons going into the loft of the central housing.
-  # Their shape is meant ease cable runs and printing, while accommodating long
-  # flange screws.
-  central-flanges:
-  - hull-around:
-    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
-    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [0, -15, 9]}, size: [4, 1, 18]}]
-    - [assortment1, NW, 0, {anchoring: {intrinsic-offset: [50, -2, 0]}, size: 4}]
-  - hull-around:
-    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -2, 0]}, size: 4}]
-    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [0, -15, 9]}, size: [4, 1, 18]}]
-    - [assortment1, NE, 0, {anchoring: {intrinsic-offset: [-50, -2, 0]}, size: 4}]
-  - hull-around:
-    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
-    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [0, 13, 9]}, size: [4, 1, 18]}]
-    - [assortment1, SW, 0, {anchoring: {intrinsic-offset: [50, 0, 0]}, size: 4}]
-  - hull-around:
-    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 0, 0]}, size: 4}]
-    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [0, 13, 9]}, size: [4, 1, 18]}]
-    - [assortment1, SE, 0, {anchoring: {intrinsic-offset: [-50, 0, 0]}, size: 4}]
-  # Extra shapes beneath the lowest assortment port contain the last sets of
-  # flange screws and magnets.
   outer-bosses-beneath-drawer-stack:
-  - hull-around:
-    - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [6, -11, -2]}, size: [12, 22, 4]}]
-    - [assortment3, NW, 2, {anchoring: {intrinsic-offset: [9, -11, -1]}, size: [18, 22, 2]}]
-  - hull-around:
+  - above-ground: true
+    reflect: true
+    hull-around:
     - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-6, -11, -2]}, size: [12, 22, 4]}]
     - [assortment3, NE, 2, {anchoring: {intrinsic-offset: [-9, -11, -1]}, size: [18, 22, 2]}]
   inner-bosses-beneath-drawer-stack:
-  - hull-around:
-    - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [6, 8, -2]}, size: [12, 18, 4]}]
-    - [assortment3, SW, 2, {anchoring: {intrinsic-offset: [9, 8, -1]}, size: [18, 18, 2]}]
-  - hull-around:
+  - above-ground: true
+    reflect: true
+    hull-around:
     - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-6, 8, -2]}, size: [12, 18, 4]}]
     - [assortment3, SE, 2, {anchoring: {intrinsic-offset: [-9, 8, -1]}, size: [18, 18, 2]}]
+  # Finally the bosses for bottom-plate screws are drawn.
+  central-bottom-plate-bosses:
+  - above-ground: true
+    body: central-housing
+    hull-around:
+    - [bottom-central-N, null, 0, 3]
+  - above-ground: true
+    body: central-housing
+    reflect: true
+    hull-around:
+    - [bottom-central-NE, null, 0, 3]
+  - above-ground: true
+    body: central-housing
+    hull-around:
+    - [bottom-central-S, null, 0, 3]
+  - above-ground: true
+    body: central-housing
+    reflect: true
+    hull-around:
+    - [bottom-central-SE, null, 0, 3]
+  bookend-bottom-plate-bosses:
+  # On the far side of the right-hand bookend, the USB port extends into the
+  # nearest flange boss for added stability against the force of insertion.
+  # However, this extension should not be reflected because the USB port does
+  # not exist on the left side. Therefore, the same flange boss is also drawn
+  # in full, reflected.
+  - above-ground: true
+    body: central-housing
+    reflect: true
+    hull-around:
+    - [bottom-bookend-N, null, 0, 3]
+  - above-ground: true
+    hull-around:
+    - [ext-usb-holder]
+    - [bottom-bookend-N, null, 2]
+  - above-ground: true
+    body: central-housing
+    reflect: true
+    hull-around:
+    - [bottom-bookend-S, null, 0, 3]

@@ -96,11 +96,18 @@ by-key:
     wall:
       extent: 2
       to-ground: true
-      thickness: [2.1, 2.1, 4]
       segments:
-        "0": [0, 0, 0]
-        "1": [0, 2, -1]
-        "2": [0, 5, -14]
+        "0":
+          size: [2.1, 2.1, 4]
+          intrinsic-offset: [0, 0, 0]
+        "1":
+          size: [2.1, 2.1, 4]
+          intrinsic-offset: [0, 2, -1]
+        "2":
+          size: [2.1, 2.1, 4]
+          intrinsic-offset: [0, 5, -14]
+        "3":
+          size: [2.1, 2.1, 4]
   clusters:
     main:
       parameters:
@@ -121,17 +128,23 @@ by-key:
                 wall:
                   extent: 3
                   segments:
-                    "1": [0, 8.5, -7]
-                    "2": [0, 1, -3]
-                    "3": [0, -2, -10]
+                    "1":
+                      intrinsic-offset: [0, 8.5, -7]
+                    "2":
+                      intrinsic-offset: [0, 1, -3]
+                    "3":
+                      intrinsic-offset: [0, -2, -10]
             WSW:
               parameters:
                 wall:
                   extent: 3
                   segments:
-                    "1": [0, 8.5, -7]
-                    "2": [0, 1, -3]
-                    "3": [0, -2, -10]
+                    "1":
+                      intrinsic-offset: [0, 8.5, -7]
+                    "2":
+                      intrinsic-offset: [0, 1, -3]
+                    "3":
+                      intrinsic-offset: [0, -2, -10]
             # No internal wall against thumb clusters.
             SSE:
               parameters:
@@ -190,7 +203,8 @@ by-key:
               parameters:
                 wall:
                   segments:
-                    "2": [3, 5, -14]
+                    "2":
+                      intrinsic-offset: [3, 5, -14]
         "4":
           parameters:
             layout:
@@ -201,7 +215,8 @@ by-key:
               parameters:
                 wall:
                   segments:
-                    "2": [-7, 5, -14]
+                    "2":
+                      intrinsic-offset: [-7, 5, -14]
     thumb0:
       parameters:
         key-style: big
@@ -210,7 +225,9 @@ by-key:
         wall:
           extent: 0
           to-ground: false
-          thickness: [0.1, 0.1, 4]
+          segments:
+            "0":
+              size: [0.1, 0.1, 4]
       columns:
         last:
           parameters:
@@ -221,15 +238,17 @@ by-key:
             ESE:
               parameters:
                 wall:
-                  thickness: [2.1, 2.1, 4]
                   segments:
-                    "0": [-1, -1, 0]
+                    "0":
+                      size: [2.1, 2.1, 4]
+                      intrinsic-offset: [-1, -1, 0]
             SSE:
               parameters:
                 wall:
-                  thickness: [2.1, 2.1, 4]
                   segments:
-                    "0": [-1, -1, 0]
+                    "0":
+                      size: [2.1, 2.1, 4]
+                      intrinsic-offset: [-1, -1, 0]
     thumb1:
       parameters:
         layout:
@@ -238,8 +257,6 @@ by-key:
               column: 1
             separation:
               column: 1
-        wall:
-          thickness: [2.1, 2.1, 4]
       columns:
         first:
           rows:
@@ -266,12 +283,14 @@ by-key:
               parameters:
                 wall:
                   segments:
-                    "2": [0, 3, -8]
+                    "2":
+                      intrinsic-offset: [0, 3, -8]
             NNW:
               parameters:
                 wall:
                   segments:
-                    "2": [0, 3, -8]
+                    "2":
+                      intrinsic-offset: [0, 3, -8]
         last:
           rows:
             first:
@@ -318,44 +337,62 @@ main-body:
   reflect: true
   bottom-plate:
     include: true
-    installation:
-      dome-caps: true
-      thickness: 1.2
-      inserts:
-        include: true
-        diameter:
-          top: 5.1
-          bottom: 5.31
-        length: 3.8
-      fasteners:
-        bolt-properties:
-          m-diameter: 3  # Speculation; Short may have used non-metric.
-          head-type: countersunk
-          total-length: 6
-          include-threading: false  # Threading not used with inserts.
-        positions:
-        - anchor: thumb-ml
+flanges:
+  main-bottom-plate:
+    include: true
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3  # Speculation; Short may have used non-metric.
+        head-type: countersunk
+        point-type: cone  # Design for manufacturing: Easy printing.
+        total-length: 6
+    inserts:
+      include: true
+      length: 3.8
+      height: 2
+      diameter:
+        top: 5.1
+        bottom: 5.31
+    bosses:
+      include: true
+      segments:
+        "0":
+          size: [8, 1]  # 6.91 in Short’s original, but this is more robust with
+                        # a thin bottom plate.
+        "1":
+          style: sphere
+          size: 6.7
+          intrinsic-offset: [0, 0, -6]
+    positions:
+      - anchoring:
+          anchor: thumb-ml
           side: N
           segment: 2
-          intrinsic-offset: [0, 0, 0]
-        - anchor: back0
+      - anchoring:
+          anchor: back0
           side: W
           segment: 2
           intrinsic-offset: [-3, 2, 0]
-        - anchor: back3
+      - anchoring:
+          anchor: back3
           side: N
           segment: 2
-        - anchor: right0
+      - anchoring:
+          anchor: right0
           side: E
           segment: 2
           intrinsic-offset: [-1, 0, 0]
-        - anchor: m02
+      - anchoring:
+          anchor: m02
           side: S
           segment: 2
           intrinsic-offset: [2, -4, 0]
 tweaks:
   webbing:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:  # Between the two thumb clusters.
       - [thumb-tl, NW, 0]
       - [thumb-ml, NE, 0]
@@ -366,7 +403,8 @@ tweaks:
       - [thumb-tr, SW, 0]
       - [thumb-mr, SE, 0]
       - [thumb-tr, SE, 0]
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:  # Between thumb0 and the main cluster.
       - [thumb-tl, NW, 0]
       - [m00, SSW, 0]
@@ -388,48 +426,47 @@ tweaks:
         - [m02, SSE, 0]
         - [m03, WSW, 0]
   near-low-corner:
-    - chunk-size: 3
+    - above-ground: true
+      chunk-size: 3
       hull-around:
       - [m03, NE]
       - [m04, SW]
       - [m03, SE]
       - [m04, SSW, 0, 2]
       - [m03, SSE, 0, 2]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [m04, SSW, 2]
       - [m03, SSE, 2]
   to-floor:
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [m00, WSW, 3]
       - [thumb-ml, NNE, 2]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [thumb-ml, NNW, 2]
       - [thumb-bl, NNE, 2]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [m03, SSW, 2]
       - [thumb-tr, SSE, 2]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [thumb-tr, SSE, 2]
       - [thumb-mr, SSE, 2]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [thumb-mr, SSW, 2]
       - [thumb-br, SSE, 2]
   bottom-plate-only:
     - at-ground: true
-      above-ground: false
       hull-around:
       - [m03, E, 2]
       - [m03, ESE, 2]
       - [m03, SSE, 2]
       - [m03, SSW, 2]
     - at-ground: true
-      above-ground: false
       hull-around:
       - [thumb-mr, SSE, 2]
       - [thumb-ml, NNE, 2]
@@ -437,14 +474,18 @@ tweaks:
       - [m03, NE]
       - [thumb-tr, SSE, 2]
   thumb-to-finger-gap:
-    - chunk-size: 3
+    - above-ground: true
+      at-ground: true
+      chunk-size: 3
       hull-around:
       - [m00, WSW, 0, 1]
       - [m00, WSW, 2, 3]
       - [thumb-tl, WNW, 0]
       - [thumb-ml, NNE, 2]
       - [thumb-ml, NNE, 0, 1]
-    - chunk-size: 2
+    - above-ground: true
+      shadow-ground: true  # Better than at-ground here for one tiny detail.
+      chunk-size: 2
       hull-around:
       - [thumb-mr, SSE, 0, 2]
       - hull-around:
@@ -452,11 +493,11 @@ tweaks:
         - [thumb-tr, ESE, 0, 1]
       - [m03, SSW, 0, 2]
   hole-through-big-port:
-    - {positive: false,
+    - {above-ground: true, cut: true,
        anchoring: {anchor: big-port, side: S, intrinsic-offset: [0, 0, 5]},
        size: [10.78, 13, 5]}
   hole-through-small-port:
-    - {positive: false,
+    - {above-ground: true, cut: true,
        anchoring: {anchor: small-port},
        size: [6.5, 20, 13.6]}
 mcu:
@@ -471,7 +512,7 @@ mcu:
       include: true
       extra-space: [3, 19.9, 0.43]
       thickness: 3
-      sides:
+      rim:
         lateral-thickness: 4
         overhang-thickness: 4
         overhang-width: 3

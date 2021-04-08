@@ -2,7 +2,7 @@
 
 # Options for connecting a wrist rest
 
-Each heading in this document represents a recognized configuration key in YAML files for a DMOTE variant.
+Each heading in this document represents a recognized configuration key in [YAML files for the DMOTE application](configuration.md).
 
 This specific document describes options for each “mount”, a pair of cuboid blocks used to anchor threaded fasteners for the `threaded` style of wrist rest, a parameter documented [here](options-main.md). Each block in the pair is part of a different body: One is part of the wrist rest, and the other a “partner” body.
 
@@ -45,7 +45,12 @@ The following describes only a subset of what you can include here:
 * `head-type`: A keyword describing the head of the bolt, such as `hex` or `countersunk`.
 * `total-length`: The length of the threaded part of the bolt, in mm.
 
-Default values provided by the application are bare minima. More usefully, the application injects DFM functions and flags negative space for specific uses.
+The DMOTE application provides some parameters that differ from the default values in `scad-klupe` itself, in the following ways:
+
+* `negative`: The DMOTE application automatically sets this to `true` for bolt models that represent negative space.
+* `compensator`: The application automatically injects a DFM function.
+* `include-threading`: This is `true` by default in `scad-klupe` and `false` by default in the DMOTE application. The main reason for this difference is the general pattern of defaulting to false in the application for predictability. Secondary reasons are rendering performance, the option of tapping threads after printing, and the uselessness of threads in combination with heat-set inserts.
+
 
 ### Parameter <a id="fasteners-heights">`heights`</a>
 
@@ -114,7 +119,7 @@ A map of short names to specific blocks as such, i.e. `partner-side` or `wrist-s
 
 A map of short names to nuts. Nuts are identified by tuples (lists of two items) where each tuple names a block, i.e. `partner-side` or `wrist-side`, and indexes a fastener in the `heights` list above. Indexing starts from zero.
 
-This parameter is used to name nuts to go on each end of each threaded rod. The intended use for this is with negative-space `tweaks`, where you target each nut by its name and supply `positive: false`. Some recipes:
+This parameter is used to name nuts to go on each end of each threaded rod. The intended use for this is with negative-space `tweaks`, where you target each nut by its name and supply `cut: true`. Some recipes:
 
 - To get a cavity for a nut wholly inside a block, just target the nut for a tweak without an offset or other special arguments. It will be necessary to pause printing in order to insert the nut in such a cavity.
 - To get a pocket for sliding in a nut from the top of the mount, hull a nut in its place with the same nut, offset higher on the z axis. Design the pad of the wrist rest to cover the pocket.

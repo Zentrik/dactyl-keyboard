@@ -35,11 +35,6 @@ When present, a central housing naturally determines the position of each other 
         - Section <a href="#user-content-adapter-receivers-width">`width`</a>
             - Parameter <a href="#user-content-adapter-receivers-width-inner">`inner`</a>
             - Parameter <a href="#user-content-adapter-receivers-width-taper">`taper`</a>
-- Section <a href="#user-content-bottom-plate">`bottom-plate`</a>
-    - Section <a href="#user-content-bottom-plate-projections">`projections`</a>
-        - Parameter <a href="#user-content-bottom-plate-projections-include">`include`</a>
-        - Parameter <a href="#user-content-bottom-plate-projections-scale">`scale`</a>
-    - Parameter <a href="#user-content-bottom-plate-fastener-positions">`fastener-positions`</a>
 
 ## Parameter <a id="include">`include`</a>
 
@@ -80,7 +75,7 @@ Those items which are “above ground” determine the shape of each outer edge 
 
 In addition to all properties named thus far, each item in the `interface` list may also include an `adapter` subsection. This section, and everything in it, is optional and relates to the central housing adapter feature, described elsewhere in this document. Briefly, the adapter fits precisely onto each interface of the housing. Here’s what the `adapter` subsection can contain:
 * `alias`: A symbolic name for this point on the side of the adapter facing away from the central housing. Notice that the side facing toward the central housing is coterminous with the interface itself, so the corresponding point on it is named by `right-hand-alias`.
-* `segments`: A map of integer segment IDs to three-dimensional offsets in mm. In this map, segment 0 refers to the outer shell of the adapter, and any offset provided for it is added to both the width of the adapter and the base position when determining the exact shape of the adapter. Segment 1 refers to the inside of the adapter; any offset provided for it is relative to the sum of the final position of segment 0 and the central housing’s thickness, which acts as a radial inset.
+* `segments`: A map of integer segment IDs to maps with three-dimensional offsets in mm. In this map, segment 0 refers to the outer shell of the adapter, and any offset provided for it is added to both the width of the adapter and the base position when determining the exact shape of the adapter. Segment 1 refers to the inside of the adapter; any offset provided for it is relative to the sum of the final position of segment 0 and the central housing’s thickness, which acts as a radial inset.
 
 `segments` resembles an entry in the `by-key` section of parameters. There are two important differences: Segment IDs other than 0 and 1 cannot be targeted, and because the offset for segment 1 is applied only after housing thickness, it does not provide total and direct control. Notice also that adapter segment offsets refer to global vector space.
 
@@ -97,9 +92,12 @@ The following example covers only one vertex on the housing and two correspondin
     adapter:
       alias: adapter-side-1
       segments:
-        "0": [10, 0, 0]
-        "1": [-1, 0, 0]
+        "0":
+          intrinsinc-offset: [10, 0, 0]
+        "1":
+          intrinsinc-offset: [-1, 0, 0]
 ```
+
 In this example, the vertex named `adapter-side-1` will be placed 10 mm plus the overall width of the adapter away from `housing-side-1R`, with the adapter covering the intervening distance, so that the shell of the adapter touches both vertices, and the housing only touches one. Given that the `base` z coordinate is zero, both `at-ground` and `above-ground` have their default values and are therefore redundant in the example.
 
 The example’s segment-1 offset puts a gradient on the outer face of the adapter, the side facing away from the central housing. Such a gradient can be useful for joining the adapter to key walls with `tweaks`.
@@ -181,7 +179,12 @@ The following describes only a subset of what you can include here:
 * `head-type`: A keyword describing the head of the bolt, such as `hex` or `countersunk`.
 * `total-length`: The length of the threaded part of the bolt, in mm.
 
-Default values provided by the application are bare minima. More usefully, the application injects DFM functions and flags negative space for specific uses.
+The DMOTE application provides some parameters that differ from the default values in `scad-klupe` itself, in the following ways:
+
+* `negative`: The DMOTE application automatically sets this to `true` for bolt models that represent negative space.
+* `compensator`: The application automatically injects a DFM function.
+* `include-threading`: This is `true` by default in `scad-klupe` and `false` by default in the DMOTE application. The main reason for this difference is the general pattern of defaulting to false in the application for predictability. Secondary reasons are rendering performance, the option of tapping threads after printing, and the uselessness of threads in combination with heat-set inserts.
+
 
 #### Parameter <a id="adapter-fasteners-positions">`positions`</a>
 
@@ -242,26 +245,6 @@ The width of the receiver at its base, before it starts to taper, in mm.
 ##### Parameter <a id="adapter-receivers-width-taper">`taper`</a>
 
 The width of a taper, as with the lip.
-
-## Section <a id="bottom-plate">`bottom-plate`</a>
-
-Any bottom plating for the case will extend to the midpoint of the central housing, on the assumption that bottom-plating anchors will be used to attach it there.
-
-### Section <a id="bottom-plate-projections">`projections`</a>
-
-To facilitate printing a central housing standing on its edge, or to add strength, you can extend bottom-plating anchors onto the nearest wall, via a convex hull of each anchor and its projection. The result is an internal chamfer resembling a primitive fillet.
-
-#### Parameter <a id="bottom-plate-projections-include">`include`</a>
-
-If `true`, extend each bottom-plating anchor.
-
-#### Parameter <a id="bottom-plate-projections-scale">`scale`</a>
-
-The scale of each projection, as a 2-tuple of horizontal and vertical factors. The horizontal factor controls the width of the projection and the vertical factor its height. The length of the projection is fixed at the distance between the center of the anchor and the outermost part of its shell.
-
-### Parameter <a id="bottom-plate-fastener-positions">`fastener-positions`</a>
-
-The positions of threaded fasteners used to attach the bottom plate to the central housing. In addition to the properties permitted in similar lists of such anchors, the central housing permits a `direction`, formulated as a point on the compass or an angle in radians. This property controls the facing of a projection. Typically, you want it facing the central housing’s nearest wall.
 
 ⸻
 

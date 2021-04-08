@@ -133,7 +133,6 @@ Here follows the complete order of resolution in an extended example, for a `wal
     - Parameter <a href="#user-content-plate-size">`size`</a>
     - Parameter <a href="#user-content-plate-position">`position`</a>
 - Section <a href="#user-content-wall">`wall`</a>
-    - Parameter <a href="#user-content-wall-thickness">`thickness`</a>
     - Parameter <a href="#user-content-wall-extent">`extent`</a>
     - Parameter <a href="#user-content-wall-to-ground">`to-ground`</a>
     - Parameter <a href="#user-content-wall-segments">`segments`</a>
@@ -288,17 +287,6 @@ The walls of the keyboard case support the key mounts and protect the electronic
 
 The `wall` section determines the shape of the case wall, specifically the skirt around each key mount along the edges of the board. These skirts are made up of convex hulls wrapping sets of corner posts.
 
-### Parameter <a id="wall-thickness">`thickness`</a>
-
-The size in mm of the key mount and each wall post.
-
-Notice that the unit size of each key, and therefore the horizontal extent of each key mounting plate, is a function of `key-style`, not of this parameter.
-
-The `thickness` parameter instead controls three other aspects of the keyboard case:
-
-- The thickness of the key mounting plate itself. When specifying `thickness` as a list of three dimensions (`[1, 2, 3]`), mounting plate thickness is governed solely by the z-axis dimension (`3`) and the other figures are ignored.
-- The thickness of the walls as drawn automatically and as targeted by `tweaks`. Whereas mounting-plate thickness ignores the x- and y-axis dimensions of this parameter, wall posts are cuboids that use all three dimensions.
-
 ### Parameter <a id="wall-extent">`extent`</a>
 
 A segment ID describing how far away from the key mount to extend its wall. Note that even if this is set lower than the number of segments you’ve defined, you can still use `tweaks` to target other segments.
@@ -309,17 +297,18 @@ If `true`, draw one extra, vertical section of wall between the segment identifi
 
 ### Parameter <a id="wall-segments">`segments`</a>
 
-A map of segment IDs to xyz-coordinates in mm.
+A map describing the properties of the wall at each of its segments.
 
-This map is indexed by wall segment IDs, which are non-negative integers. As with column IDs under `columns`, they must be entered in YAML as strings.
+This map is indexed by wall segment IDs, which are non-negative integers. These must be entered in YAML as strings, i.e. in quotes.
 
-The values of the map are three-dimensional offsets. Any offset given for segment 0 is relative to a switch mounting plate. The default value for segment 0 is `[0, 0, 0]`, which means that walls will start to build out from the corner of each mounting plate.
+For each wall segment, the following parameters are available:
 
-Segments other than 0, starting with segment 1, are offset relative to the preceding segment and have no default value built into the application.
+- `size`: The measurements of the segment, in mm.
+- `intrinsic-offset`: An xyz-offset in mm from the previous segment or, in the case of segment zero, from the corner of the switch mounting plate.
 
-Offsets are *cumulative*. Segments form a chain, each one positioned relative to the one before, as the building blocks of each wall.
+The `size` of segment 0 has a dual function, determining the thickness of the key mount as well as the size of each wall post. By contrast, the *unit* size of each *key*, and therefore the horizontal extent of each key mounting plate, is a function of `key-style`, not of any parameter under `segments`.
 
-Consider this example:
+`intrinsic-offset` is *cumulative*. Segments form a chain, each one positioned relative to the one before, as the building blocks of each wall. Consider this example:
 
 ```
 by-key:
@@ -327,17 +316,20 @@ by-key:
     wall:
       extent: 2
       segments:
-        1: [0, 1, -0.5]
-        2: [0, 0, -4]
+        1:
+          intrinsic-offset: [0, 1, -0.5]
+        2:
+          intrinsic-offset: [0, 0, -4]
   sides
     SSE:
       parameters:
         wall:
           segments:
-            2: [0, 0, -10]
+            2:
+              intrinsic-offset: [0, 0, -10]
 ```
 
-With this configuration, walls will be built connecting segments 0, 1 and 2 on the edge of each key cluster. For the sake of illustration, Let’s say there’s only one cluster of keys: A, B, and C, in one row. Imagine their corners radiating numbered wall segments.
+With this configuration, walls will be built connecting segments 0, 1 and 2 on the edge of each key cluster. For the sake of illustration, Let’s say there’s only one cluster of three keys: A, B, and C, in one row. Imagine their corners radiating numbered wall segments.
 
 ```
   2–––2–2–––2–2–––2
@@ -357,7 +349,7 @@ A more detailed ASCII diagram of the B key names the sides from which its wall s
 –0–––––0–
 NNW   NNE
 
-   B
+    B
 
 SSW   SSE
 –0–––––0–

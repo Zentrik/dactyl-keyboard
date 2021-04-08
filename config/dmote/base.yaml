@@ -237,14 +237,16 @@ by-key:
                   extent: 2
                   to-ground: true
                   segments:
-                    "2": [0, 0, -12]
+                    "2":
+                      intrinsic-offset: [0, 0, -12]
             SSW:
               parameters:
                 wall:
                   extent: 2
                   to-ground: true
                   segments:
-                    "2": [0, 0, -12]
+                    "2":
+                      intrinsic-offset: [0, 0, -12]
         "4":
           parameters:
             layout:
@@ -353,25 +355,29 @@ by-key:
                 wall:
                   extent: 3
                   segments:
-                    "2": [0, 0, -6]
+                    "2":
+                      intrinsic-offset: [0, 0, -6]
             SSE:
               parameters:
                 wall:
                   extent: 2
                   segments:
-                    "2": [0, -2, -8]
+                    "2":
+                      intrinsic-offset: [0, -2, -8]
             SSW:
               parameters:
                 wall:
                   extent: 2
                   segments:
-                    "2": [0, -2, -8]
+                    "2":
+                      intrinsic-offset: [0, -2, -8]
             NNW:
               parameters:
                 wall:
                   extent: 3
                   segments:
-                    "2": [0, 0, -6]
+                    "2":
+                      intrinsic-offset: [0, 0, -6]
         last:
           parameters:
             layout:
@@ -379,7 +385,8 @@ by-key:
                 mid: [0, -7, 0]
             wall:
               segments:
-                "2": [0, 0, -11]
+                "2":
+                  intrinsic-offset: [0, 0, -11]
           rows:
             first:
               parameters:
@@ -440,13 +447,16 @@ by-key:
           parameters:
             wall:
               segments:
-                "0": [0, 2, 0]
+                "0":
+                  intrinsic-offset: [0, 2, 0]
         WNW:
           parameters:
             wall:
               segments:
-                "0": [0, 2, 0]
-                "1": [1, 0, -1]
+                "0":
+                  intrinsic-offset: [0, 2, 0]
+                "1":
+                  intrinsic-offset: [1, 0, -1]
         NNW:
           parameters:
             wall:
@@ -487,7 +497,6 @@ main-body:
         m-diameter: 6
         head-type: socket
         total-length: 8.5
-        include-threading: false
       bosses: true
       sides:
         W:
@@ -502,36 +511,12 @@ main-body:
       bolt-properties:
         m-diameter: 6
         head-type: socket
-        include-threading: false
       distance: 30
     anchoring:
       anchor: back1
       intrinsic-offset: [0, 0, 0]
   bottom-plate:
     include: true
-    thickness: 1
-    installation:
-      dome-caps: true
-      fasteners:
-        positions:
-        - anchor: rear-housing-interior
-          side: NW
-          intrinsic-offset: [3, -3, 0]
-        - anchor: rear-housing-interior
-          side: ENE
-          intrinsic-offset: [-2, -5, 0]
-        - anchor: a1
-          side: NE
-          intrinsic-offset: [-3, -3, 0]
-        - anchor: front5
-          side: SE
-          intrinsic-offset: [-3, -1, 0]
-        - anchor: t4
-          side: S
-          intrinsic-offset: [-1, 2, 0]
-        - anchor: t1
-          side: N
-          intrinsic-offset: [2, -1, 0]
   leds:
     include: true
     amount: 3
@@ -539,362 +524,6 @@ main-body:
     housing-size: 5.5  # Real size: 5 mm.
     emitter-diameter: 4
     interval: 16.8
-tweaks:
-  thumb-to-finger-gap:
-    # This large tweak covers the gap between the thumb clusters and the main
-    # cluster of keys.
-    # Webbing at the outer front0–front1 triangle at the edge of the cluster gap:
-    - chunk-size: 3
-      hull-around:
-      - [front0, SSW, 0]
-      - [front0, SSE, 0]
-      - [mt0a]
-      - hull-around:
-        - [front0, NNE, 0]
-        - [front1, NNW, 0]
-      - [front1, SSW, 0]
-    # The near (user-facing) wall of the thumb0 cluster:
-    - chunk-size: 3
-      hull-around:
-      - hull-around:
-        - [t3, ESE, 0, 1]
-        - [t3, SSE, 0, 1]
-      - hull-around:
-        - [t3, ESE, 2, 3]
-        - [t3, SSE, 2, 3]
-      - hull-around:
-        - [t4, ESE, 0, 1]
-        - [t4, SSE, 0, 1]
-      - [t4, SSE, 2, 3]
-    # West side:
-    - chunk-size: 2
-      hull-around:
-      - hull-around:
-        - [t1, NNW, 2]
-        - [t1, NNE, 2]
-        - [t1, NNE, 2, {anchoring: {intrinsic-offset: [1, -1, 0]}}]
-        - [front0, SW, 0]
-      - [front0, W, 0, 2]
-      - [front0, WNW, 0, 2]
-      - [m0, WSW, 2]
-    # Between front0–front2 and t2, taking a low road under the secondaries:
-    - chunk-size: 3
-      hull-around:
-      - [front0, SW]
-      - hull-around:
-        - [t2, NNE, 3]
-        - [t2, ENE, 3]
-      - [mt0a]
-      - [mt0b]
-      - [front1, SSW, 0]
-      - [mt0c]
-      - [front1, SSE, 0]
-      - hull-around:
-        - [front2, NNW, 0]
-        - [front2, SSW, 0]
-    # More cluster gap, taking a high road over the secondaries:
-    - chunk-size: 3
-      hull-around:
-      - [t2, ENE, 3]
-      - [mt0b]
-      - [t2, ESE, 3]
-      - [mt0c]
-      - [t3, ENE, 3]
-      - [front2, SSW, 0]
-    # The west side of front2:
-    - hull-around:
-      - [front1, SSE, 0]
-      - [front2, WNW, 0]
-      - [front2, WSW, 0]
-    # The eastern topside plate, ending in a wedge between front2 and front3:
-    - chunk-size: 3
-      hull-around:
-      - [front2, WSW, 0]
-      - [t3, NNE, 3]
-      - [front2, SSW, 0]
-      - hull-around:
-        - [t3, ESE, 2, 3]
-        - [t3, SSE, 2, 3]
-      - hull-around:
-        - [front2, ESE, 2, 3]
-        - [front2, SSE, 2, 3]
-      - [t4, SSE, 2, 3]
-      - [front2, ENE, 2, 3]
-      - [t4, SSW, 2, 3]
-      - [front3, SSW, 2, 3]
-    # The low eastern plate:
-    - chunk-size: 3
-      hull-around:
-      - hull-around:
-        - [front2, ESE, 2, 3]
-        - [front2, SSE, 2, 3]
-      - [front2, ENE, 2, 3]
-    # A triangular southern wall of front2:
-    - hull-around:
-      - [front2, SSW, 0, 1]
-      - [front2, SSE, 0, 3]
-      - [front2, ESE, 0, 3]
-  thumb-corner-webbing:
-    # Extra webbing at the four corners of the thumb0 and thumb1 clusters:
-    - hull-around:
-      - [t0, NNW, 0]
-      - [t0, NNE, 0]
-      - [t1, NNW, 0]
-    - hull-around:
-      - [t2, NNW, 0]
-      - [t2, NNE, 0, 3]
-      - [t2, ENE, 0, 3]
-      - [t1, NNE, 0, 3]
-    - hull-around:
-      - [t2, NNE, 2, 3]
-      - [t1, NNE, 2, 3]
-      - [front0, SW]
-    - hull-around:
-      - [tc, SSE, 0]
-      - [t3, WSW, 0]
-      - [t4, ENE, 0]
-    # The near upper corner:
-    - chunk-size: 3
-      hull-around:
-      - [t4, ENE, 0]
-      - [t4, SSE, 0]
-      - [t3, WSW, 0]
-      - hull-around:
-        - [t3, SSE, 0, 3]
-        - [t3, ESE, 0, 3]
-  thumb0-to-thumb1-gap:
-    # Webbing between the two thumb clusters:
-    - chunk-size: 2
-      hull-around:
-      - hull-around:
-        - [t1, NNW, 0]
-        - [t0, NNE, 0]
-      - hull-around:
-        - [t1, SSW, 0]
-        - [t0, SSE, 0]
-      - hull-around:
-        - [tc, NNW, 0]
-        - [t0, SSE, 0]
-      - hull-around:
-        - [tc, SSW, 0]
-        - [t5, NNE, 0]
-      - [t4, NNW, 0]
-    # Lower near corner:
-    - chunk-size: 3
-      hull-around:
-      - [t5, NNE, 0]
-      - [t4, NNW, 0]
-      - [t5, SSE, 0]
-      - [t4, SSW, 0]
-      - [t5, SSW, 0]
-  thumb-to-main-to-ground:
-    # Plating to ground beneath the thumb clusters:
-    - at-ground: true
-      chunk-size: 2
-      hull-around:
-      - [m0, WSW, 2]
-      - [front0, WNW, 2]
-      - [front0, W, 2]
-      - [t1, NNW, 2, 3]
-      - [t1, NNW, 0, 1]
-      - [t0, WNW, 0, 1]
-      - [t0, WSW, 0, 1]
-      - [t5, WNW, 0, 1]
-      - [t5, WSW, 0, 1]
-      - [t5, SSW, 0, 1]
-      - [t4, SSW, 0, 1]
-      - [t4, SSW, 2, 3]
-      - [front3, SSW, 2, 3]
-  aux0-to-main-gap:
-    # Strengthening the wall between m1 and back4.
-    - hull-around:
-      - [a0, SSW, 0]
-      - [back3, ESE, 0]
-      - [m1, ENE, 0]
-      - [m1, ESE, 0]
-      - [back4, WNW, 0]
-      - [back4, WSW, 0]
-    # Filling out the a0 mounting plate.
-    - hull-around:
-      - [a0, NE]
-      - [a0, SE]
-      - [a0, SW]
-      - [a0, NW]
-    # Plating over the main-aux cluster gap.
-    - chunk-size: 3
-      hull-around:
-      - [back3, ENE, 0]
-      - [a0, WNW, 0]
-      - [back3, ESE, 0]
-      - [a0, WSW, 0]
-      - [back4, NNW, 0, 1]
-      - [a0, SSE, 0, 1]
-      - [back4, NNE, 0, 1]
-      - [a1, SSW, 0, 1]
-      - [back5, NNW, 0, 1]
-      - [a1, SSE, 0, 1]
-      - [back5, NNE, 0, 1]
-      - [a1, ESE, 0, 1]
-      - [back5, ENE, 0, 1]
-    - at-ground: true
-      hull-around:
-      - [a1, ESE, 1]
-      - [a1, ENE, 1]
-      - [back5, ENE, 1]
-    # Bottom-only plating at the main-aux cluster gap:
-    - at-ground: true
-      above-ground: false
-      hull-around:
-      - [back5, ESE, 1]
-      - [a1, NE, 1]
-      - [a0, NW, 1]
-      - [back2, S]
-  rear-housing-sides:
-    # A plate to ground at the south-west corner of the rear housing:
-    - at-ground: true
-      hull-around:
-      - [rear-housing-exterior, WSW, 0, 1]
-      - [rear-housing-exterior, SSW, 1]
-      - [rear-housing-interior, WSW, 1]
-      - [back0, WNW, 2]
-    # A plate to ground at the south-east corner of the rear housing,
-    # integrating it with the aux and main clusters:
-    - at-ground: true
-      hull-around:
-      - [rear-housing-exterior, ESE, 1]
-      - [rear-housing-exterior, SSE, 1]
-      - [rear-housing-interior, ESE, 1]
-      - [a0, WNW, 1]
-    # Bottom-only plating to compensate for the aux cluster breaking up the
-    # ground-level profile of the main cluster:
-    - at-ground: true
-      above-ground: false
-      hull-around:
-      - [m1, SSW, 0]
-      - [a0, NNW, 0]
-      - [back3, ENE, 3]
-      - [rear-housing-exterior, ESE, 0]
-      - [rear-housing-exterior, WSW, 0]
-      - [back0, WNW, 3]
-      - [back0, WSW, 3]
-  rear-housing-near-edge:
-    # Complete the arched ceiling of the rear housing:
-    - hull-around:
-      - [rear-housing-exterior, WSW, 0, 1]
-      - [rear-housing-exterior, SSW, 0, 1]
-      - [rear-housing-exterior, ESE, 0, 1]
-      - [rear-housing-exterior, SSE, 0, 1]
-      - [rear-housing-interior, WSW, 0]
-      - [rear-housing-interior, SSW, 0, 1]
-      - [rear-housing-interior, ESE, 0]
-      - [rear-housing-interior, SSE, 0, 1]
-  rear-housing-to-main-gap:
-    # This tweak connects the top of the rear housing to the main cluster’s
-    # webbing. First, the western half of the connection:
-    - hull-around:
-      - [rear-housing-exterior, WSW, 0, 1]
-      - [rear-housing-interior, WSW, 0]
-      - [rear-housing-interior, SSW, 0, 1]
-      - [rear-housing-interior, SSW, 1, {anchoring: {intrinsic-offset: [-7, 0, 0]}}]
-      - [back0, WNW, 2]
-    - hull-around:  # Triangle at the edge of the web.
-      - [back0, NNW, 0, 1]
-      - [back0, NE, 0]
-      - [back1, NW, 0]
-    - hull-around:
-      - [rear-housing-exterior, WSW, 0, 1]
-      - [rear-housing-exterior, SSW, 0]
-      - [rear-housing-interior, SSW, 0]
-      - [back0, NNW, 0, 1]
-      - [back0, WNW, 0, 2]
-      - [rear-housing-exterior, S, 0, {anchoring: {intrinsic-offset: [-1, 0, 0]}}]
-      - [rear-housing-exterior, S, 1]
-      - [rear-housing-interior, S, 1]
-      - [rear-housing-interior, SSW, 1]
-      - [back1, NW, 0]
-    - hull-around:
-      - [back1, NW, 0]
-      - [back1, NE, 0]
-      - [back2, NW, 0]
-      - hull-around:
-        - [rear-housing-exterior, S, 1]
-        - [rear-housing-interior, S, 1]
-    # The eastern half:
-    - hull-around:
-      - hull-around:
-        - [rear-housing-exterior, S, 1]
-        - [rear-housing-interior, S, 1]
-      - [back2, NW]
-      - [back2, NE]
-    - hull-around:
-      - hull-around:
-        - [rear-housing-exterior, S, 1]
-        - [rear-housing-interior, S, 1]
-      - [back2, NW]
-      - [back2, NE]
-      - [back3, NW]
-      - [back3, NE]
-      - hull-around:
-        - [rear-housing-exterior, SSE, 1]
-        - [rear-housing-interior, SSE, 1]
-    - hull-around:
-      - [rear-housing-exterior, SSE, 0, 1]
-      - [rear-housing-exterior, SSE, 0, 1]
-      - [rear-housing-exterior, ESE, 0, 1]
-      - [rear-housing-exterior, ESE, 0, 1]
-      - [back3, NE]
-      - [a0, WNW, 0, 1]
-  connector-housing:
-    # A slightly pyramidal ceiling to the port, as DFM.
-    - positive: false
-      hull-around:
-      - [reflection-port]
-      - [reflection-port,
-         {anchoring: {segment: 0, intrinsic-offset: [0, 0, 1]}}]
-    # An opening from the port to the interior.
-    - positive: false
-      hull-around:
-      - [reflection-port,
-         {anchoring: {side: S, segment: 1, intrinsic-offset: [0, 0, -3]}, size: [8, 8, 8]}]
-    # A gentle transition from the rear housing’s corners to the port holder.
-    - hull-around:
-      - [reflection-port-holder]
-      - [reflection-port-holder,
-         {anchoring: {side: NW, segment: 2, intrinsic-offset: [0, 0, -10]}}]
-      - [rear-housing-exterior, SE, 0]
-mcu:
-  include: true
-  # Stand on the long edge, folded into the rear housing.
-  anchoring:
-    anchor: rear-housing-exterior
-    side: NE
-    segment: 3  # Floor level.
-    intrinsic-rotation: [0, π/2, π/-2]
-    extrinsic-offset: [-1, -5, 14]
-  support:
-    lock:
-      include: true
-      plate:
-        backing-thickness: 3
-ports:
-  # A port in the top far-right corner of the rear housing. This is for running
-  # the wire between the two halves of the keyboard on or through a connecting rod
-  # or bar that sits atop the rear housings.
-  reflection-port:
-    include: true
-    type: modular-4p4c-616e
-    anchoring:
-      anchor: rear-housing-exterior
-      side: ENE
-      segment: 1
-      intrinsic-rotation: [0, 0, π/-2]
-      extrinsic-offset: [0, -2, -2]
-    alignment:
-      side: NW
-    holder:
-      include: true
-      alias: reflection-port-holder
-      thickness: 2
 wrist-rest:
   anchoring:
     intrinsic-offset: [83, -90, 0]
@@ -945,12 +574,485 @@ wrist-rest:
       intrinsic-offset: [-5, -10, 0]
   bottom-plate:
     include: true
-    inset: 2
-    fastener-positions:
-    - anchor: plinth-mid0
-      intrinsic-offset: [0, -3, 0]
-    - anchor: plinth-near
-      intrinsic-offset: [3, 3, 0]
-    - anchor: plinth-right
-      intrinsic-offset: [-2, -3, 0]
   mould-thickness: 2
+bottom-plates:
+  thickness: 1
+flanges:
+  main-bottom-plate-front:
+    include: true
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        total-length: 8.5
+    bosses:
+      include: true
+      segments:
+        "0":
+          size: [8, 5]
+        "1":
+          style: sphere
+          size: 5
+          intrinsic-offset: [0, 0, -6]
+    positions:
+    - anchoring:
+        anchor: a1
+        side: NE
+        intrinsic-offset: [-3, -3, 0]
+    - anchoring:
+        anchor: front5
+        side: SE
+        intrinsic-offset: [-3, -1, 0]
+    - anchoring:
+        anchor: t4
+        side: S
+        intrinsic-offset: [-1, 2, 0]
+    - anchoring:
+        anchor: t1
+        side: N
+        intrinsic-offset: [2, -1, 0]
+  main-bottom-plate-rear:
+    # The purpose of main-bottom-plate-rear as distinct from
+    # main-bottom-plate-front is to allow the former to be overridden for a
+    # DMOTE variant without a rear housing.
+    include: true
+    bottom: true
+    bolts:
+      include: true
+      bolt-properties:
+        m-diameter: 3
+        head-type: countersunk
+        point-type: cone
+        total-length: 8.5
+    bosses:
+      include: true
+      # Bosses are slightly smaller, because they are supported by the rear
+      # housing.
+      segments:
+        "0":
+          size: [7, 1]
+        "1":
+          style: sphere
+          size: 5
+          intrinsic-offset: [0, 0, -6]
+    positions:
+    - anchoring:
+        anchor: rear-housing-interior
+        side: NW
+        intrinsic-offset: [3, -3, 0]
+    - anchoring:
+        anchor: rear-housing-interior
+        side: ENE
+        intrinsic-offset: [-2, -5, 0]
+  wrist-rest-bottom-plate:
+    include: true
+    bosses:
+      # The wrist rest’s bottom plate can use the same type of screws as the
+      # main body’s, but its bosses are shorter to make less of an intrusion
+      # into a soft pad.
+      include: true
+      segments:
+        "0":
+          size: [5, 1]
+        "1":
+          style: sphere
+          size: 4
+          intrinsic-offset: [0, 0, -3]
+    positions:
+    - anchoring:
+        anchor: plinth-mid0
+        intrinsic-offset: [0, -3, 0]
+    - anchoring:
+        anchor: plinth-near
+        intrinsic-offset: [3, 3, 0]
+    - anchoring:
+        anchor: plinth-right
+        intrinsic-offset: [-2, -3, 0]
+tweaks:
+  thumb-to-finger-gap:
+    # This large tweak covers the gap between the thumb clusters and the main
+    # cluster of keys.
+    # Webbing at the outer front0–front1 triangle at the edge of the cluster gap:
+    - above-ground: true
+      chunk-size: 3
+      hull-around:
+      - [front0, SSW, 0]
+      - [front0, SSE, 0]
+      - [mt0a]
+      - hull-around:
+        - [front0, NNE, 0]
+        - [front1, NNW, 0]
+      - [front1, SSW, 0]
+    # The near (user-facing) wall of the thumb0 cluster:
+    - above-ground: true
+      chunk-size: 3
+      hull-around:
+      - hull-around:
+        - [t3, ESE, 0, 1]
+        - [t3, SSE, 0, 1]
+      - hull-around:
+        - [t3, ESE, 2, 3]
+        - [t3, SSE, 2, 3]
+      - hull-around:
+        - [t4, ESE, 0, 1]
+        - [t4, SSE, 0, 1]
+      - [t4, SSE, 2, 3]
+    # West side:
+    - above-ground: true
+      chunk-size: 2
+      hull-around:
+      - hull-around:
+        - [t1, NNW, 2]
+        - [t1, NNE, 2]
+        - [t1, NNE, 2, {anchoring: {intrinsic-offset: [1, -1, 0]}}]
+        - [front0, SW, 0]
+      - [front0, W, 0, 2]
+      - [front0, WNW, 0, 2]
+      - [m0, WSW, 2]
+    # Between front0–front2 and t2, taking a low road under the secondaries:
+    - above-ground: true
+      chunk-size: 3
+      hull-around:
+      - [front0, SW]
+      - hull-around:
+        - [t2, NNE, 3]
+        - [t2, ENE, 3]
+      - [mt0a]
+      - [mt0b]
+      - [front1, SSW, 0]
+      - [mt0c]
+      - [front1, SSE, 0]
+      - hull-around:
+        - [front2, NNW, 0]
+        - [front2, SSW, 0]
+    # More cluster gap, taking a high road over the secondaries:
+    - above-ground: true
+      chunk-size: 3
+      hull-around:
+      - [t2, ENE, 3]
+      - [mt0b]
+      - [t2, ESE, 3]
+      - [mt0c]
+      - [t3, ENE, 3]
+      - [front2, SSW, 0]
+    # The west side of front2:
+    - above-ground: true
+      hull-around:
+      - [front1, SSE, 0]
+      - [front2, WNW, 0]
+      - [front2, WSW, 0]
+    # The eastern topside plate, ending in a wedge between front2 and front3:
+    - above-ground: true
+      chunk-size: 3
+      hull-around:
+      - [front2, WSW, 0]
+      - [t3, NNE, 3]
+      - [front2, SSW, 0]
+      - hull-around:
+        - [t3, ESE, 2, 3]
+        - [t3, SSE, 2, 3]
+      - hull-around:
+        - [front2, ESE, 2, 3]
+        - [front2, SSE, 2, 3]
+      - [t4, SSE, 2, 3]
+      - [front2, ENE, 2, 3]
+      - [t4, SSW, 2, 3]
+      - [front3, SSW, 2, 3]
+    # The low eastern plate:
+    - above-ground: true
+      chunk-size: 3
+      hull-around:
+      - hull-around:
+        - [front2, ESE, 2, 3]
+        - [front2, SSE, 2, 3]
+      - [front2, ENE, 2, 3]
+    # A triangular southern wall of front2:
+    - above-ground: true
+      hull-around:
+      - [front2, SSW, 0, 1]
+      - [front2, SSE, 0, 3]
+      - [front2, ESE, 0, 3]
+  thumb-corner-webbing:
+    # Extra webbing at the four corners of the thumb0 and thumb1 clusters:
+    - above-ground: true
+      hull-around:
+      - [t0, NNW, 0]
+      - [t0, NNE, 0]
+      - [t1, NNW, 0]
+    - above-ground: true
+      hull-around:
+      - [t2, NNW, 0]
+      - [t2, NNE, 0, 3]
+      - [t2, ENE, 0, 3]
+      - [t1, NNE, 0, 3]
+    - above-ground: true
+      hull-around:
+      - [t2, NNE, 2, 3]
+      - [t1, NNE, 2, 3]
+      - [front0, SW]
+    - above-ground: true
+      hull-around:
+      - [tc, SSE, 0]
+      - [t3, WSW, 0]
+      - [t4, ENE, 0]
+    # The near upper corner:
+    - above-ground: true
+      chunk-size: 3
+      hull-around:
+      - [t4, ENE, 0]
+      - [t4, SSE, 0]
+      - [t3, WSW, 0]
+      - hull-around:
+        - [t3, SSE, 0, 3]
+        - [t3, ESE, 0, 3]
+  thumb0-to-thumb1-gap:
+    # Webbing between the two thumb clusters:
+    - above-ground: true
+      chunk-size: 2
+      hull-around:
+      - hull-around:
+        - [t1, NNW, 0]
+        - [t0, NNE, 0]
+      - hull-around:
+        - [t1, SSW, 0]
+        - [t0, SSE, 0]
+      - hull-around:
+        - [tc, NNW, 0]
+        - [t0, SSE, 0]
+      - hull-around:
+        - [tc, SSW, 0]
+        - [t5, NNE, 0]
+      - [t4, NNW, 0]
+    # Lower near corner:
+    - above-ground: true
+      chunk-size: 3
+      hull-around:
+      - [t5, NNE, 0]
+      - [t4, NNW, 0]
+      - [t5, SSE, 0]
+      - [t4, SSW, 0]
+      - [t5, SSW, 0]
+  thumb-to-main-to-ground:
+    # Plating to ground beneath the thumb clusters:
+    - to-ground: true
+      polyfill: true
+      chunk-size: 2
+      hull-around:
+      - [m0, WSW, 2]
+      - [front0, WNW, 2]
+      - [front0, W, 2]
+      - [t1, NNW, 2, 3]
+      - [t1, NNW, 0, 1]
+      - [t0, WNW, 0, 1]
+      - [t0, WSW, 0, 1]
+      - [t5, WNW, 0, 1]
+      - [t5, WSW, 0, 1]
+      - [t5, SSW, 0, 1]
+      - [t4, SSW, 0, 1]
+      - [t4, SSW, 2, 3]
+      - [front3, SSW, 2, 3]
+  aux0-to-main-gap:
+    # Strengthening the wall between m1 and back4.
+    - above-ground: true
+      hull-around:
+      - [a0, SSW, 0]
+      - [back3, ESE, 0]
+      - [m1, ENE, 0]
+      - [m1, ESE, 0]
+      - [back4, WNW, 0]
+      - [back4, WSW, 0]
+    # Filling out the a0 mounting plate.
+    - above-ground: true
+      hull-around:
+      - [a0, NE]
+      - [a0, SE]
+      - [a0, SW]
+      - [a0, NW]
+    # Plating over the main-aux cluster gap.
+    - above-ground: true
+      chunk-size: 3
+      hull-around:
+      - [back3, ENE, 0]
+      - [a0, WNW, 0]
+      - [back3, ESE, 0]
+      - [a0, WSW, 0]
+      - [back4, NNW, 0, 1]
+      - [a0, SSE, 0, 1]
+      - [back4, NNE, 0, 1]
+      - [a1, SSW, 0, 1]
+      - [back5, NNW, 0, 1]
+      - [a1, SSE, 0, 1]
+      - [back5, NNE, 0, 1]
+      - [a1, ESE, 0, 1]
+      - [back5, ENE, 0, 1]
+    - to-ground: true
+      hull-around:
+      - [a1, ESE, 1]
+      - [a1, ENE, 1]
+      - [back5, ENE, 1]
+    # Bottom-only plating at the main-aux cluster gap:
+    - at-ground: true
+      hull-around:
+      - [back5, ESE, 1]
+      - [a1, NE, 1]
+      - [a0, NW, 1]
+      - [back2, S]
+  rear-housing-sides:
+    # A plate to ground at the south-west corner of the rear housing:
+    - to-ground: true
+      hull-around:
+      - [rear-housing-exterior, WSW, 0, 1]
+      - [rear-housing-exterior, SSW, 1]
+      - [rear-housing-interior, WSW, 1]
+      - [back0, WNW, 2]
+    # A plate to ground at the south-east corner of the rear housing,
+    # integrating it with the aux and main clusters:
+    - to-ground: true
+      hull-around:
+      - [rear-housing-exterior, ESE, 1]
+      - [rear-housing-exterior, SSE, 1]
+      - [rear-housing-interior, ESE, 1]
+      - [a0, WNW, 1]
+    # Bottom-only plating to compensate for the aux cluster breaking up the
+    # ground-level profile of the main cluster:
+    - at-ground: true
+      hull-around:
+      - [m1, SSW, 0]
+      - [a0, NNW, 0]
+      - [back3, ENE, 3]
+      - [rear-housing-exterior, ESE, 0]
+      - [rear-housing-exterior, WSW, 0]
+      - [back0, WNW, 3]
+      - [back0, WSW, 3]
+  rear-housing-near-edge:
+    # Complete the arched ceiling of the rear housing:
+    - above-ground: true
+      hull-around:
+      - [rear-housing-exterior, WSW, 0, 1]
+      - [rear-housing-exterior, SSW, 0, 1]
+      - [rear-housing-exterior, ESE, 0, 1]
+      - [rear-housing-exterior, SSE, 0, 1]
+      - [rear-housing-interior, WSW, 0]
+      - [rear-housing-interior, SSW, 0, 1]
+      - [rear-housing-interior, ESE, 0]
+      - [rear-housing-interior, SSE, 0, 1]
+  rear-housing-to-main-gap:
+    # This tweak connects the top of the rear housing to the main cluster’s
+    # webbing. First, the western half of the connection:
+    - above-ground: true
+      hull-around:
+      - [rear-housing-exterior, WSW, 0, 1]
+      - [rear-housing-interior, WSW, 0]
+      - [rear-housing-interior, SSW, 0, 1]
+      - [rear-housing-interior, SSW, 1, {anchoring: {intrinsic-offset: [-7, 0, 0]}}]
+      - [back0, WNW, 2]
+    - above-ground: true
+      hull-around:  # Triangle at the edge of the web.
+      - [back0, NNW, 0, 1]
+      - [back0, NE, 0]
+      - [back1, NW, 0]
+    - above-ground: true
+      hull-around:
+      - [rear-housing-exterior, WSW, 0, 1]
+      - [rear-housing-exterior, SSW, 0]
+      - [rear-housing-interior, SSW, 0]
+      - [back0, NNW, 0, 1]
+      - [back0, WNW, 0, 2]
+      - [rear-housing-exterior, S, 0, {anchoring: {intrinsic-offset: [-1, 0, 0]}}]
+      - [rear-housing-exterior, S, 1]
+      - [rear-housing-interior, S, 1]
+      - [rear-housing-interior, SSW, 1]
+      - [back1, NW, 0]
+    - above-ground: true
+      hull-around:
+      - [back1, NW, 0]
+      - [back1, NE, 0]
+      - [back2, NW, 0]
+      - hull-around:
+        - [rear-housing-exterior, S, 1]
+        - [rear-housing-interior, S, 1]
+    # The eastern half:
+    - above-ground: true
+      hull-around:
+      - hull-around:
+        - [rear-housing-exterior, S, 1]
+        - [rear-housing-interior, S, 1]
+      - [back2, NW]
+      - [back2, NE]
+    - above-ground: true
+      hull-around:
+      - hull-around:
+        - [rear-housing-exterior, S, 1]
+        - [rear-housing-interior, S, 1]
+      - [back2, NW]
+      - [back2, NE]
+      - [back3, NW]
+      - [back3, NE]
+      - hull-around:
+        - [rear-housing-exterior, SSE, 1]
+        - [rear-housing-interior, SSE, 1]
+    - above-ground: true
+      hull-around:
+      - [rear-housing-exterior, SSE, 0, 1]
+      - [rear-housing-exterior, SSE, 0, 1]
+      - [rear-housing-exterior, ESE, 0, 1]
+      - [rear-housing-exterior, ESE, 0, 1]
+      - [back3, NE]
+      - [a0, WNW, 0, 1]
+  connector-housing:
+    # A slightly pyramidal ceiling to the port, as DFM.
+    - above-ground: true
+      cut: true
+      hull-around:
+      - [reflection-port]
+      - [reflection-port,
+         {anchoring: {segment: 0, intrinsic-offset: [0, 0, 1]}}]
+    # An opening from the port to the interior.
+    - above-ground: true
+      cut: true
+      hull-around:
+      - [reflection-port,
+         {anchoring: {side: S, segment: 1, intrinsic-offset: [0, 0, -3]}, size: [8, 8, 8]}]
+    # A gentle transition from the rear housing’s corners to the port holder.
+    - above-ground: true
+      hull-around:
+      - [reflection-port-holder]
+      - [reflection-port-holder,
+         {anchoring: {side: NW, segment: 2, intrinsic-offset: [0, 0, -10]}}]
+      - [rear-housing-exterior, SE, 0]
+mcu:
+  include: true
+  # Stand on the long edge, folded into the rear housing.
+  anchoring:
+    anchor: rear-housing-exterior
+    side: NE
+    segment: 3  # Floor level.
+    intrinsic-rotation: [0, π/2, π/-2]
+    extrinsic-offset: [-1, -5, 14]
+  support:
+    lock:
+      include: true
+      plate:
+        backing-thickness: 3
+ports:
+  # A port in the top far-right corner of the rear housing. This is for running
+  # the wire between the two halves of the keyboard on or through a connecting rod
+  # or bar that sits atop the rear housings.
+  reflection-port:
+    include: true
+    type: modular-4p4c-616e
+    anchoring:
+      anchor: rear-housing-exterior
+      side: ENE
+      segment: 1
+      intrinsic-rotation: [0, 0, π/-2]
+      extrinsic-offset: [0, -2, -2]
+    alignment:
+      side: NW
+    holder:
+      include: true
+      alias: reflection-port-holder
+      thickness: 2

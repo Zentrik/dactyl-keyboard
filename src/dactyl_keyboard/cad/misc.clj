@@ -12,7 +12,8 @@
             [scad-tarmi.maybe :as maybe]
             [scad-klupe.iso :refer [bolt]]
             [dactyl-keyboard.compass :as compass]
-            [dactyl-keyboard.cad.poly :as poly]))
+            [dactyl-keyboard.cad.poly :as poly]
+            [dactyl-keyboard.param.access :refer [compensator]]))
 
 
 (def wafer 0.001)  ; Generic insignificant feature size.
@@ -75,9 +76,17 @@
       (translator [0 0 radius]))))
 
 (defn merge-bolt
-  "Wrap scad-klupe.iso/bolt for multiple sources of parameters."
-  [& option-maps]
-  (bolt (apply merge option-maps)))
+  "Wrap scad-klupe.iso/bolt for multiple sources of parameters.
+  Assume a negative-space bolt with threads to be tapped manually, and
+  with standard DFM compensation. Allow overrides, including a built-in
+  override for low resolution."
+  [getopt & option-maps]
+  (bolt (merge {:negative true
+                :compensator (compensator getopt)
+                :include-threading false}
+               (apply merge option-maps)
+               (when (getopt :resolution :exclude-all-threading)
+                 {:include-threading false}))))
 
 (defn grid-factors
   "Find a pair of [x y] unit particles for movement on a grid."
@@ -196,3 +205,13 @@
              [(edge (compass/gentle-left direction))
               (edge (compass/gentle-right direction))]])
           [:NE :SE :SW :NW]))))
+
+(defn flip-x
+  "Mirror on the x-axis, discarding the original."
+  [shape]
+  (if (some? shape) (model/mirror [-1 0 0] shape)))
+
+(defn reflect-x
+  "Mirror on the x-axis, keeping the original."
+  [shape]
+  (if (some? shape) (model/union shape (flip-x shape))))

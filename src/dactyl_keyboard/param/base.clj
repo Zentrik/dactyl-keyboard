@@ -77,6 +77,39 @@
        (catch clojure.lang.ExceptionInfo ~sym
          (expand-exception ~sym ~key)))))
 
+(defn- traverse-node
+  "Treat a branch or leaf. Raise an exception on superfluous entries.
+  Branches and leaves are distinguished by arity."
+  ;; TODO: Track path for use in exceptions.
+  ([leafer key-picker nominal candidate]
+   (when-not (map? candidate)
+     (throw (ex-info "Non-mapping section in configuration file"
+                     {:type :structural-error
+                      :raw-value candidate})))
+   (reduce
+     (fn [coll key]
+       (let [metadata (get-in nominal [key ::metadata])]
+         (when-not (spec/valid? ::metadata metadata)
+           (throw (ex-info "Superfluous entry in configuration file"
+                           {:type :superfluous-key
+                            :keys (list key)
+                            :accepted-keys (keys nominal)})))
+         (assoc coll key
+           (if (:leaf metadata)
+             ;; Entry is a leaf.
+             (traverse-node leafer key-picker nominal candidate key)
+             ;; Else entry is a branch.
+             (traverse-node leafer key-picker (key nominal) (key candidate {}))))))
+     candidate
+     (remove #(= ::metadata %) (distinct (key-picker nominal candidate)))))
+  ([leafer _ nominal candidate key]
+   (when-not (contains? nominal key)
+     (throw (ex-info "Superfluous configuration key"
+                     {:type :superfluous-key
+                      :keys (list key)
+                      :accepted-keys (keys nominal)})))
+   (expand-any-exception key (leafer (key nominal) (key candidate)))))
+
 
 ;;;;;;;;;;;;;;;
 ;; Interface ;;
@@ -102,34 +135,6 @@
   Skip the first entry, assuming it’s documentation."
   [flat]
   (reduce coalesce (ordered-map) (rest flat)))
-
-(defn traverse-node
-  "Treat a branch or leaf. Raise an exception on superfluous entries.
-  Branches and leaves are distinguished by arity."
-  ([leafer key-picker nominal candidate]
-   (when-not (map? candidate)
-     (throw (ex-info "Non-mapping section in configuration file"
-                     {:type :structural-error
-                      :raw-value candidate})))
-   (reduce
-     (fn [coll key]
-       (let [metadata (get-in nominal [key ::metadata])]
-         (assert (spec/valid? ::metadata metadata))
-         (assoc coll key
-           (if (:leaf metadata)
-             ;; Entry is a leaf.
-             (traverse-node leafer key-picker nominal candidate key)
-             ;; Else entry is a branch.
-             (traverse-node leafer key-picker (key nominal) (key candidate {}))))))
-     candidate
-     (remove #(= ::metadata %) (distinct (key-picker nominal candidate)))))
-  ([leafer _ nominal candidate key]
-   (when-not (contains? nominal key)
-     (throw (ex-info "Superfluous configuration key"
-                     {:type :superfluous-key
-                      :keys (list key)
-                      :accepted-keys (keys nominal)})))
-   (expand-any-exception key (leafer (key nominal) (key candidate)))))
 
 
 ;; Parsing:

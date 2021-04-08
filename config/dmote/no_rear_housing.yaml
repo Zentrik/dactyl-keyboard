@@ -52,33 +52,23 @@ by-key:
 main-body:
   rear-housing:
     include: false
-  bottom-plate:
-    installation:
-      fasteners:
-        positions:
-        # Move two fasteners that ordinarily anchor to the rear housing.
-        - anchor: back0
-          side: NW
-          segment: 3
-          intrinsic-offset: [3, -3, 0]
-        - anchor: back3
-          side: NW
-          segment: 3
-          intrinsic-offset: [-2, -3, 0]
-        # The remaining positions are not changed from base.yaml.
-        - anchor: a1
-          side: NE
-          intrinsic-offset: [-3, -3, 0]
-        - anchor: front5
-          side: SE
-          intrinsic-offset: [-3, -1, 0]
-        - anchor: t4
-          side: S
-          intrinsic-offset: [-1, 2, 0]
-        - anchor: t1
-          side: N
-          intrinsic-offset: [2, -1, 0]
-  leds:
+flanges:
+  main-bottom-plate-rear:
+    positions:  # Override base design.
+    - anchoring:
+        anchor: back0
+        side: NW
+        segment: 3
+        intrinsic-offset: [3, -3, 0]
+    - anchoring:
+        anchor: back3
+        side: NW
+        segment: 3
+        intrinsic-offset: [-2, -3, 0]
+mcu:
+  include: false
+ports:
+  reflection-port:
     include: false
 tweaks:
   # Tweaks directly involving the rear housing are disabled.
@@ -93,66 +83,16 @@ tweaks:
          {anchoring: {side: S, segment: 1, intrinsic-offset: [0, 0, -3]}, size: [8, 8, 8]}]
   # A new tweak is added to bridge the rear key cluster gap directly.
   rear-gap:
-    - hull-around:
+    - above-ground: true
+      hull-around:
       - [back3, NE]
       - [back3, NNE, 1]
       - [back3, ENE, 1]
       - [a0, NW, 1]
       - [back3, NNE, 2, 3]
       - [back3, ENE, 2, 3]
-    - at-ground: true
+    - to-ground: true
       hull-around:
       - [a0, NW, 1]
       - [back3, NNE, 3]
       - [back3, ENE, 2, 3]
-mcu:
-  include: true
-  type: promicro
-  preview: false
-  # Stand on the long edge, folded into the rear housing.
-  anchoring:
-    anchor: back0
-    side: NW
-    segment: 3  # Floor level.
-    preserve-orientation: true
-    intrinsic-rotation: [pi/70, pi/2, 0]
-    extrinsic-offset: [-4.5, -18, -37.5]
-  support:
-    shelf:
-      include: true
-    lock: 
-      include: false
-      plate:
-        backing-thickness: 3
-ports:
-  reflection-port:
-    include: true
-    type: modular-4p4c-616e
-    anchoring:
-      anchor: back0
-      side: NW
-      segment: 3
-      preserve-orientation: true
-      intrinsic-rotation: [0, 0, pi/45]
-      intrinsic-offset: [20, 11, -25]
-    alignment:
-      side: NW
-      segment: 0
-    holder:
-      include: true
-      alias: reflection-port-holder
-      thickness: 2
-  mcu-port:
-    include: true
-    type: custom
-    size: [12, 20, 10]
-    anchoring:
-      anchor: back0
-      side: NW
-      segment: 3  # Floor level.
-      preserve-orientation: true
-      intrinsic-rotation: [pi/70, pi/2, 0]
-      extrinsic-offset: [2, 2, -31] #[-4.5, -18, -37.5] + [5, 0, 2.5]
-    alignment:
-      side: NW
-      segment: 0

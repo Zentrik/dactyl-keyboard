@@ -4,10 +4,35 @@ This log follows the conventions of
 version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
+
 ### Changed
-- Replaced the way that key-cluster walls are measured. Instead of separate
-  settings for `bevel`, `parallel` and `perpendicular`, there is now only
-  one setting, called `segments`, with more power.
+- Switched the default build target (with GNU Make) from the DMOTE to the
+  Dactyl-ManuForm.
+- More precise control.
+    - Replaced the way that key-cluster walls are measured. Instead of separate
+      settings for `bevel`, `parallel` and `perpendicular`, there is now only
+      one setting, called `segments`, with more power, including the ability to
+      vary size (was `thickness`) by segment.
+    - Integrated bottom-plate fasteners and their bosses with the `flanges`
+      section of configuration introduced in v0.6.0. This invalidates most of
+      the `bottom-plate` settings that were previously available under
+      `main-body`, `central-housing` and `wrist-rest`, but adds more power:
+      Customizable boss `segments` richer than those of keys, heat-set
+      inserts universally available, the option of different kinds of screws
+      for different bottom plates (e.g. shorter in wrist rest) etc.
+- Fewer side effects.
+    - Disabled responsiveness to predicted resting key clearance by default.
+      This can be re-enabled with a new parameter (`use-key-style`).
+    - Disabled responsiveness to flange screw size (including the “new”
+      bottom-plate flanges) for making flange bosses.
+    - Changed the meaning of the `at-ground` parameter for tweak nodes,
+      so that hulling to ground is no longer a side effect of it.
+      Added a corresponding, explicit `to-ground` parameter.
+- Made `false` the default value of all Boolean parameters.
+    - Stopped including arbitrary shapes for tweaks in `above-ground` contexts
+      by default.
+    - Replaced `positive` for arbitrary shapes with an inverted `cut` parameter.
+    - Set `include-threading` for bolts to `false` by default.
 - Completed migration from long-form names for the points of the compass,
   like `north`, to short-form names, like `N`. This leaves only short forms,
   so the distinction itself is abolished.
@@ -16,8 +41,6 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       under a new section (`sides`).
     - The longer names, previously optional for MCU shelf sides, are no
       longer permitted there.
-- Disabled responsiveness to predicted resting key clearance by default.
-  This can be re-enabled with a new parameter (`use-key-style`).
 - Moved and replaced some (other) parameters:
     - Made the `central-housing` → `adapter` → `receivers` → `thickness` →
       `bridge` parameter a section, with its function inherited by `tangential`
@@ -26,45 +49,76 @@ version 0.2.0, thus covering only a fraction of the project’s history.
       adjacent `bevel` section of parameters, which is indexed by sides
       (compass points).
     - Replaced central-housing interface settings for `adapter` → `offset`
-      with a `segments` map, as for key-cluster walls.
+      with a `segments` map, as for key-cluster walls and flange bosses.
+    - Replaced the `positive` property of tweaks (default true) with a `cut`
+      property (default false). Its effects are identical, but the values are
+      inverted.
+    - Migrated to `scad-app` v1.0.0, which includes renaming the
+      `minimum-face-size` parameter to `minimum-facet-size`, even in the DMOTE
+      configuration interface.
+- Dropped support for arbitrary YAML inclusions through GNU Make.
 - Bundled designs:
     - Stopped including threading on bolts in most models, for faster renders
       and reduced sensitivity to printer accuracy.
-    - Slightly thicker bottom plate on DMOTE.
     - M3 screws instead of M4 in `config/base.yaml`.
-    - Improved USB B port and MCU shelf on Concertina.
-    - Slightly deeper holes through bottom plate on Concertina.
+    - DMOTE:
+        - Slightly thicker bottom plate.
+        - Smaller bosses for screws attaching the wrist’s bottom plate.
+    - Concertina:
+        - Reduced to one size of keycaps.
+        - Improved USB B port and MCU shelf.
+        - More tactile, variegated thumb clusters.
+        - Pinky-finger and thumb-cluster keys closer.
+        - Deeper, fewer holes through bottom plate.
+    - Slight tuning of DFM settings for more common printers and more modern
+      slicers.
 
 ### New
-- Added support Kailh’s PG1511 series switches and similar MX clones without
-  lateral recesses in the lower body.
+- Added support for Kailh’s PG1511 series switches and similar MX clones
+  without lateral recesses in the lower body.
 - Added a nominal clearance parameter to make it easier to design for multiple
   different types of switches and keycaps.
 - Added support for custom key mounting plate size.
+- Added several new optional behaviours for arbitrary shapes (`reflect`,
+  `to-ground`, `shadow-ground`, `polyfill`).
 - Extended the concept of a combined bottom plate to include the central
   housing.
-- Added a side effect of `channel-length` to bottom-plate fasteners, allowing
-  them to rise from the floor.
 - Added a parameter for central-housing interface fastener-receiver radial
   thickness.
 - Added thinning of central-housing adapter lips based on DFM error setting.
-- Added precise control over segment 1 for each node on the central housing
+- Added precise control over segments for each node on the central housing
   interface’s adapter.
+- Added a parameter for disabling all threading to improve low-resolution
+  rendering performance.
+- Added a tutorial for getting started designing from scratch.
 - Bundled designs:
     - Added a configuration fragment for removing the rear housing of the DMOTE.
+
+### Fixed
+- Made the application of the DFM `error-general` setting to bolts more
+  consistent.
 
 ### Migration guide
 Here is an example of adaptation from the old wall-building syntax to the new:
 
-```
+```diff
 -      parallel: 4
 -      perpendicular: -16
 +      segments:
-+        "2": [0, 4, -16]
++        "2":
++          intrinsic-offset: [0, 4, -16]
 ```
 
 That is an excerpt from `config/macropad/base.yaml`, preserving the shape of
 the wall.
+
+To preserve the old behaviour of a tweak node that should affect the keyboard
+case body, add `above-ground: true` to it. Where you had `positive: false`,
+replace it with `cut: true`. Where you had `at-ground: true`, replace it with
+`to-ground: true`.
+
+Migrating bottom-plate settings is a lot more complex, owing to the volume of
+changes. Please inspect bundled configurations.
 
 ## [Version 0.6.0] - 2020-09-09
 ### Changed

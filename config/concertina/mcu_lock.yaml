@@ -20,14 +20,14 @@ mcu:
         alias: mcu-plate
       fastener-properties:
         m-diameter: 3
-        include-threading: false
 ports:
   ext-usb-hole:
     include: false
 tweaks:
   external-usb: null  # Disabled.
   mcu-holder:
-  - at-ground: true
+  - to-ground: true
+    at-ground: false  # Would be redundant, because it’s already internal.
     hull-around:
     # Offsets from the inner corners of the MCU plate are designed to get out
     # of the way of the screw that attaches the MCU lock bolt.

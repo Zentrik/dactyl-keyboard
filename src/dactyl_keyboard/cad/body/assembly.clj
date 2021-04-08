@@ -4,30 +4,42 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ns dactyl-keyboard.cad.body.assembly
-  (:require [scad-clj.model :as model]
+  (:require [clojure.set :as setlib]
+            [scad-clj.model :as model]
             [scad-tarmi.maybe :as maybe]
-            [dactyl-keyboard.sandbox :as sandbox]
             [dactyl-keyboard.cad.auxf :as auxf]
-            [dactyl-keyboard.cad.body.main :as main-body]
             [dactyl-keyboard.cad.body.central :as central]
+            [dactyl-keyboard.cad.body.main :as main-body]
             [dactyl-keyboard.cad.body.wrist :as wrist]
             [dactyl-keyboard.cad.bottom :as bottom]
+            [dactyl-keyboard.cad.flange :as flange]
             [dactyl-keyboard.cad.key :as key]
             [dactyl-keyboard.cad.key.wall :as wall]
             [dactyl-keyboard.cad.key.web :as web]
             [dactyl-keyboard.cad.mask :as mask]
             [dactyl-keyboard.cad.mcu :as mcu]
+            [dactyl-keyboard.cad.misc :refer [flip-x reflect-x]]
             [dactyl-keyboard.cad.place :as place]
-            [dactyl-keyboard.cad.tweak :as tweak]))
+            [dactyl-keyboard.cad.tweak :as tweak]
+            [dactyl-keyboard.sandbox :as sandbox]))
 
+
+(defn- twanges
+  "Tweaks and flanges with identical selection criteria."
+  ;; This is enabled by tweaks and flanges having very similar interfaces,
+  ;; despite being somewhat different semantically.
+  [getopt selection]
+  (maybe/union
+    (tweak/union-3d getopt selection)
+    (flange/union getopt selection)))
 
 (defn- custom-negatives
   "Assorted negative space for a predefined body.
   This includes negative sandbox shapes, applied to all bodies."
-  [getopt body]
+  [getopt body bottom]
   (maybe/union
-    (tweak/selected-tweaks getopt false body)
-    (auxf/flange-negatives getopt body)
+    (twanges getopt {:include-negative true, :include-bottom bottom,
+                     :include-top true, :bodies #{body}})
     (sandbox/negative getopt)))
 
 (defn wrist-rest-plinth-right
@@ -37,21 +49,13 @@
     (maybe/union
       (mask/above-wrist-bottom-plate getopt
         (wrist/plinth-plastic getopt)
-        (tweak/selected-tweaks getopt true :wrist-rest)
-        (when (getopt :wrist-rest :bottom-plate :include)
-          (bottom/posts-in-wrist-rest getopt)))
+        (twanges getopt {:include-positive true, :include-top true,
+                         :bodies #{:wrist-rest}}))
       (when (and (getopt :wrist-rest :preview)
                  (getopt :wrist-rest :bottom-plate :include))
         (bottom/wrist-positive getopt)))
-    (mask/above-wrist-bottom-plate getopt
-      (custom-negatives getopt :wrist-rest))
-    (when (getopt :wrist-rest :bottom-plate :include)
-      (maybe/union
-        (if (getopt :wrist-rest :preview)
-          (bottom/holes-in-wrist-plate getopt)
-          (bottom/holes-in-wrist-body getopt))
-        (when (getopt :main-body :bottom-plate :installation :inserts)
-          (bottom/inserts getopt))))))
+    (custom-negatives getopt :wrist-rest
+      (getopt :wrist-rest :bottom-plate :include))))
 
 (defn wrist-rest-rubber-casting-mould-right
   "A thin shell that fits on top of the right-hand-side wrist-rest model.
@@ -63,10 +67,11 @@
     (model/difference
       (wrist/mould-polyhedron getopt)
       (wrist/projection-maquette getopt)
-      (when (getopt :wrist-rest :bottom-plate :include)
-        (bottom/posts-in-wrist-rest getopt))
-      (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/selected-tweaks getopt true :main)))))
+      (twanges getopt
+        {:include-positive true, :include-top true,
+         :bodies (setlib/union
+                   #{:wrist-rest}
+                   (when (= (getopt :wrist-rest :style) :solid) #{:main}))}))))
 
 (defn wrist-rest-rubber-pad-right
   "Right-hand-side wrist-rest pad model. Useful in visualization and
@@ -77,9 +82,11 @@
     (maybe/difference
       (mask/above-wrist-bottom-plate getopt
         (wrist/rubber-insert-positive getopt))
-      (bottom/posts-in-wrist-rest getopt)
-      (when (= (getopt :wrist-rest :style) :solid)
-        (tweak/selected-tweaks getopt true :main)))))
+      (twanges getopt
+        {:include-positive true, :include-top true,
+         :bodies (setlib/union
+                   #{:wrist-rest}
+                   (when (= (getopt :wrist-rest :style) :solid) #{:main}))}))))
 
 (defn- wrist-rest-preview
   "Right-hand-side preview wrist-rest model."
@@ -93,41 +100,35 @@
   "The body of the central housing. Not subject to reflection, but generally
   bilaterally symmetrical. Chiral modules are an exception to this symmetry:
   Their positions are mirrored on the left-hand side, but their individual
-  models are mirrored again to “undo” the local effects at each new position."
+  models are mirrored again to “undo” the local effects at each new position.
+  There is no separate bottom-plate inclusion parameter for the central
+  housing; it uses the main body’s parameter for that."
   [getopt]
   (let [bilateral
         (fn ([subject]  ; Non-chiral.
-             (maybe/union subject (maybe/mirror [-1 0 0] subject)))
+             (reflect-x subject))
             ([subject-right subject-left]  ; Chiral.
-             (maybe/union subject-right (maybe/mirror [-1 0 0] subject-left))))]
+             (maybe/union subject-right (flip-x subject-left))))]
     (maybe/union
       (maybe/difference
         (mask/above-main-bottom-plate getopt
           (maybe/difference
             (maybe/union
               (central/main-shell getopt)
-              (when (getopt :main-body :bottom-plate :include)
-                (bilateral (bottom/posts-in-central-housing getopt)))
               (when (getopt :central-housing :derived :include-lip)
                 (bilateral (central/lip-body-right getopt)))
               (when (getopt :central-housing :derived :include-adapter)
                 (bilateral (central/adapter-fastener-receivers getopt)))
               (auxf/ports-positive getopt #{:central-housing})
-              (tweak/selected-tweaks getopt true :central-housing))
+              (twanges getopt {:include-positive true, :include-top true,
+                               :bodies #{:central-housing}}))
             (when (getopt :central-housing :derived :include-adapter)
               (bilateral
                 (central/adapter-right-fasteners getopt)
                 (central/adapter-left-fasteners getopt)))
             (when (getopt :mcu :derived :include-centrally)
               (mcu/negative-composite getopt))
-            (auxf/ports-negative getopt #{:central-housing})
-            (when (getopt :main-body :bottom-plate :include)
-              (bilateral
-                (bottom/holes-in-main-body getopt)
-                (bottom/holes-in-left-housing-body getopt)))
-            (when (and (getopt :wrist-rest :bottom-plate :include)
-                       (getopt :main-body :bottom-plate :installation :inserts :include))
-              (bilateral (bottom/inserts getopt))))
+            (auxf/ports-negative getopt #{:central-housing}))
           (when (and (getopt :mcu :derived :include-centrally)
                      (getopt :mcu :support :shelf :include))
             (mcu/shelf-in-place getopt))
@@ -137,9 +138,10 @@
           (sandbox/positive getopt))
         (when (getopt :central-housing :derived :include-adapter)
           (bilateral (central/dfm-shim getopt)))
-        (custom-negatives getopt :central-housing))
+        (custom-negatives getopt :central-housing
+          (getopt :main-body :bottom-plate :include)))
       (when (and (getopt :main-body :bottom-plate :include)
-                 (getopt :main-body :bottom-plate :preview))
+                 (getopt :bottom-plates :preview))
         (if (and (getopt :wrist-rest :include)
                  (getopt :wrist-rest :preview)
                  (getopt :wrist-rest :bottom-plate :include))
@@ -156,20 +158,19 @@
     (key/metacluster key/cluster-plates getopt)
     (key/metacluster web/cluster getopt)
     (key/metacluster wall/cluster getopt)
+    (auxf/ports-positive getopt #{:main})
     (when (and (getopt :mcu :derived :include-mainly)
                (getopt :mcu :support :shelf :include))
       (mcu/shelf-in-place getopt))
     (when (and (getopt :wrist-rest :include)
                (= (getopt :wrist-rest :style) :threaded))
       (wrist/all-partner-side-blocks getopt))
-    (auxf/ports-positive getopt #{:main})
     (when (getopt :main-body :back-plate :include)
       (auxf/backplate-block getopt))
     (when (getopt :main-body :rear-housing :include)
       (main-body/rear-housing-positive getopt))
-    (tweak/selected-tweaks getopt true :main)
-    (when (getopt :main-body :bottom-plate :include)
-      (bottom/posts-in-main-body getopt))
+    (twanges getopt {:include-positive true, :include-top true,
+                     :bodies #{:main}})
     (when (getopt :central-housing :derived :include-adapter)
       (central/adapter-shell getopt))))
 
@@ -188,10 +189,10 @@
                (= (getopt :wrist-rest :style) :solid))
       (wrist-rest-plinth-right getopt))
     (when (and (getopt :main-body :bottom-plate :include)
-               (getopt :main-body :bottom-plate :preview))
+               (getopt :bottom-plates :preview))
       (if (and (getopt :wrist-rest :include)
                (getopt :wrist-rest :bottom-plate :include)
-               (getopt :main-body :bottom-plate :combine))
+               (getopt :bottom-plates :combine))
         (bottom/combined-positive getopt)
         (maybe/union
           (bottom/case-positive getopt)
@@ -226,7 +227,7 @@
           (when (and (getopt :wrist-rest :include)
                      (= (getopt :wrist-rest :style) :threaded))
             (wrist/all-fasteners getopt))
-          (custom-negatives getopt :main))
+          (custom-negatives getopt :main false))
         ;; Outer positives, subject only to outer negatives:
         (when (and (getopt :mcu :derived :include-mainly)
                    (getopt :mcu :support :lock :include))
@@ -236,17 +237,11 @@
         (main-body/rear-housing-mount-negatives getopt))
       (when (getopt :central-housing :derived :include-adapter)
         (central/negatives getopt))
-      (when (getopt :main-body :bottom-plate :include)
-        (if (getopt :main-body :bottom-plate :preview)
-          (bottom/holes-in-main-plate getopt)
-          (bottom/holes-in-main-body getopt)))
-      (when (and (getopt :main-body :bottom-plate :include)
-                 (getopt :main-body :bottom-plate :installation :inserts))
-        (bottom/inserts getopt))
       (when (and (getopt :wrist-rest :include)
                  (getopt :wrist-rest :preview)
                  (getopt :wrist-rest :bottom-plate :include))
-        (bottom/holes-in-wrist-plate getopt)))
+        (twanges getopt {:include-top true, :include-negative true,
+                         :bodies #{:wrist-rest}})))
     ;; The remaining elements are visualizations for use in development.
     (when (getopt :keys :preview)
       (key/metacluster key/cluster-keycaps getopt))
