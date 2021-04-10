@@ -8,6 +8,68 @@ keys:
       supported: false
     minimal-tall:
       supported: false
+main-body:
+  leds:
+    include: false
+mcu:
+  include: true
+  type: promicro
+  preview: false
+  # Stand on the long edge, folded into the rear housing.
+  anchoring:
+    anchor: back0
+    side: NW
+    segment: 3  # Floor level.
+    preserve-orientation: true
+    intrinsic-rotation: [pi/70, pi/2, 0]
+    extrinsic-offset: [-4.5, -18, -37.5]
+  support:
+    shelf:
+      include: true
+    lock: 
+      include: false
+      plate:
+        backing-thickness: 3
+ports:
+  reflection-port:
+    include: true
+    type: modular-4p4c-616e
+    anchoring:
+      anchor: back0
+      side: NW
+      segment: 3
+      preserve-orientation: true
+      intrinsic-rotation: [0, 0, pi/45]
+      intrinsic-offset: [20, 11, -25]
+    alignment:
+      side: NW
+      segment: 0
+    holder:
+      include: true
+      alias: reflection-port-holder
+      thickness: 2
+  mcu-port:
+    include: true
+    type: custom
+    size: [12, 20, 10]
+    anchoring:
+      anchor: back0
+      side: NW
+      segment: 3  # Floor level.
+      preserve-orientation: true
+      intrinsic-rotation: [pi/70, pi/2, 0]
+      extrinsic-offset: [2, 2, -31] #[-4.5, -18, -37.5] + [5, 0, 2.5]
+    alignment:
+      side: NW
+      segment: 0
+tweaks:
+  connector-housing:
+    # An opening from the port to the interior.
+    - above-ground: true
+      cut: true
+      hull-around:
+      - [reflection-port,
+         {anchoring: {side: S, segment: 1, intrinsic-offset: [0, 0, -20]}, size: [100, 8, 8]}]
 dfm:
   error-general: -0.8
   keycaps:

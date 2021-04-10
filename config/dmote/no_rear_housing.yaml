@@ -75,12 +75,7 @@ tweaks:
   rear-housing-sides: null
   rear-housing-near-edge: null
   rear-housing-to-main-gap: null
-  connector-housing:
-    # An opening from the port to the interior.
-    - positive: false
-      hull-around:
-      - [reflection-port,
-         {anchoring: {side: S, segment: 1, intrinsic-offset: [0, 0, -3]}, size: [8, 8, 8]}]
+  connector-housing: null
   # A new tweak is added to bridge the rear key cluster gap directly.
   rear-gap:
     - above-ground: true
