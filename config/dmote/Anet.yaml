@@ -64,12 +64,19 @@ ports:
       segment: 0
 tweaks:
   connector-housing:
+    # A slightly pyramidal ceiling to the port, as DFM.
+    - above-ground: true
+      cut: true
+      hull-around:
+      - [reflection-port]
+      - [reflection-port,
+         {anchoring: {segment: 0, intrinsic-offset: [0, 0, 1]}}]
     # An opening from the port to the interior.
     - above-ground: true
       cut: true
       hull-around:
       - [reflection-port,
-         {anchoring: {side: S, segment: 1, intrinsic-offset: [0, 0, -20]}, size: [100, 8, 8]}]
+         {anchoring: {side: S, segment: 1, intrinsic-offset: [0, 0, -3]}, size: [8, 8, 8]}]
 dfm:
   error-general: -0.8
   keycaps:
