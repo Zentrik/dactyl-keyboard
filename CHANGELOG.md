@@ -4,7 +4,16 @@ This log follows the conventions of
 version 0.2.0, thus covering only a fraction of the project’s history.
 
 ## [Unreleased]
+### Changed
+- Starting using YAML anchors in bundled configuration files for deduplication.
+  This is not a change in application logic, API or design; the YAML parser
+  expands each reference to the same effect as before.
 
+### Added
+- Bundled designs: Added a `kailh.yaml` file for PG1511-style switches on a
+  Concertina.
+
+## [Version 0.7.0] - 2021-04-10
 ### Changed
 - Switched the default build target (with GNU Make) from the DMOTE to the
   Dactyl-ManuForm.
@@ -73,7 +82,7 @@ version 0.2.0, thus covering only a fraction of the project’s history.
     - Slight tuning of DFM settings for more common printers and more modern
       slicers.
 
-### New
+### Added
 - Added support for Kailh’s PG1511 series switches and similar MX clones
   without lateral recesses in the lower body.
 - Added a nominal clearance parameter to make it easier to design for multiple
@@ -617,7 +626,8 @@ configuration files. Salient points:
 - Removed a dependency on `unicode-math`. The requisite version of the library
   had not been deployed to Clojars and its use was cosmetic.
 
-[Unreleased]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.6.0...HEAD
+[Unreleased]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.7.0...HEAD
+[Version 0.7.0]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.6.0...dmote-v0.7.0
 [Version 0.6.0]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.5.1...dmote-v0.6.0
 [Version 0.5.1]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.5.0...dmote-v0.5.1
 [Version 0.5.0]: https://github.com/veikman/dactyl-keyboard/compare/dmote-v0.4.0...dmote-v0.5.0
